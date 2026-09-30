@@ -14,6 +14,7 @@ const BLANK = {
   description: "",
   featured: false,
   isNew: true,
+  podEnabled: false,
 };
 
 export default function AdminProductsPage() {
@@ -54,6 +55,7 @@ export default function AdminProductsPage() {
       description: p.description,
       featured: p.featured,
       isNew: p.isNew,
+      podEnabled: p.podEnabled,
       variants: p.variants,
     });
   }
@@ -93,6 +95,18 @@ export default function AdminProductsPage() {
     load();
   }
 
+  async function togglePod(product) {
+    // Optimistic update so the switch feels instant in the dashboard.
+    setProducts((prev) =>
+      prev.map((p) => (p.id === product.id ? { ...p, podEnabled: !p.podEnabled } : p))
+    );
+    await fetch(`/api/admin/products/${product.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ podEnabled: !product.podEnabled }),
+    });
+  }
+
   if (products === null) {
     return <main className="max-w-[1220px] mx-auto px-5 sm:px-7 py-14">Loading…</main>;
   }
@@ -130,6 +144,10 @@ export default function AdminProductsPage() {
               Mark as new
             </label>
           </div>
+          <label className="flex items-center gap-2 font-mono text-xs bg-cobalt/5 border border-cobalt/30 rounded-sm px-3 py-2.5">
+            <input type="checkbox" checked={form.podEnabled} onChange={(e) => update("podEnabled", e.target.checked)} />
+            Allow customers to personalize this product (Print on Demand)
+          </label>
           {error && <p className="text-stamp font-mono text-xs">{error}</p>}
           <div className="flex gap-3 pt-2">
             <button className="flex-1 bg-ink text-canvas py-2.5 font-mono text-xs uppercase tracking-wider rounded-sm">
@@ -144,6 +162,10 @@ export default function AdminProductsPage() {
         </form>
 
         <div className="space-y-3">
+          <div className="flex items-center justify-between px-4 font-mono text-[11px] uppercase tracking-wider text-ink/45">
+            <span>Product</span>
+            <span>Print on Demand</span>
+          </div>
           {products.map((p) => (
             <div key={p.id} className="flex items-center gap-4 border border-line p-4">
               <div className="w-10 h-10 rounded-full flex-none" style={{ background: p.hex }} />
@@ -153,6 +175,20 @@ export default function AdminProductsPage() {
                   {p.category} · ৳{p.price} · stock {p.variants.reduce((s, v) => s + v.stock, 0)}
                 </p>
               </div>
+              <button
+                onClick={() => togglePod(p)}
+                aria-label="Toggle print on demand"
+                title="Toggle print-on-demand for this product"
+                className={`relative w-11 h-6 rounded-full flex-none transition-colors ${
+                  p.podEnabled ? "bg-cobalt" : "bg-ink/15"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                    p.podEnabled ? "translate-x-[22px]" : "translate-x-0.5"
+                  }`}
+                />
+              </button>
               <button onClick={() => startEdit(p)} className="font-mono text-xs underline">
                 Edit
               </button>

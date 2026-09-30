@@ -11,12 +11,39 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [discountInput, setDiscountInput] = useState("");
+  const [discount, setDiscount] = useState(null);
+  const [discountError, setDiscountError] = useState("");
+  const [applying, setApplying] = useState(false);
 
-  const shippingFee = subtotal >= 2000 || subtotal === 0 ? 0 : 80;
-  const total = subtotal + shippingFee;
+  const discountAmount = discount ? discount.amount : 0;
+  const freeShippingFromCode = discount?.freeShipping || false;
+  const shippingFee = subtotal >= 2000 || freeShippingFromCode || subtotal === 0 ? 0 : 80;
+  const total = Math.max(0, subtotal - discountAmount) + shippingFee;
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  async function applyDiscount(e) {
+    e.preventDefault();
+    setDiscountError("");
+    setApplying(true);
+    try {
+      const res = await fetch("/api/discount/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: discountInput, subtotal }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Invalid code");
+      setDiscount(data);
+    } catch (err) {
+      setDiscount(null);
+      setDiscountError(err.message);
+    } finally {
+      setApplying(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -28,7 +55,7 @@ export default function CheckoutPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, shipping: form, paymentMethod }),
+        body: JSON.stringify({ items, shipping: form, paymentMethod, discountCode: discount?.code || null }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
@@ -105,12 +132,41 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
+
+          <form onSubmit={applyDiscount} className="flex gap-2 mb-4">
+            <input
+              value={discountInput}
+              onChange={(e) => setDiscountInput(e.target.value)}
+              placeholder="Discount code"
+              className="flex-1 border border-line rounded-sm px-3 py-2 text-sm font-mono outline-none focus:border-cobalt"
+            />
+            <button
+              type="submit"
+              disabled={applying || !discountInput}
+              className="px-4 border border-ink font-mono text-xs uppercase tracking-wider rounded-sm disabled:opacity-40"
+            >
+              {applying ? "…" : "Apply"}
+            </button>
+          </form>
+          {discountError && <p className="text-stamp font-mono text-xs mb-3">{discountError}</p>}
+          {discount && (
+            <p className="text-cobalt font-mono text-xs mb-3">
+              &ldquo;{discount.code}&rdquo; applied — {discount.label}
+            </p>
+          )}
+
           <hr className="border-line mb-4" />
           <div className="space-y-1.5 font-mono text-sm">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>৳{subtotal.toLocaleString()}</span>
             </div>
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-cobalt">
+                <span>Discount</span>
+                <span>−৳{discountAmount.toLocaleString()}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span>Shipping</span>
               <span>{shippingFee === 0 ? "Free" : `৳${shippingFee}`}</span>

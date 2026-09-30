@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import ProductArt from "./ProductArt";
+import QuickBuyModal from "./QuickBuyModal";
+import { pushRecentlyViewed } from "@/lib/recentlyViewed";
 
 export default function ProductDetail({ product }) {
   const { addItem, wishlist, toggleWishlist } = useCart();
@@ -12,7 +14,12 @@ export default function ProductDetail({ product }) {
   const [size, setSize] = useState(inStockVariants[0]?.size || product.variants[0].size);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [buyNowOpen, setBuyNowOpen] = useState(false);
   const isWishlisted = wishlist.includes(product.handle);
+
+  useEffect(() => {
+    pushRecentlyViewed(product.handle);
+  }, [product.handle]);
 
   const selectedVariant = product.variants.find((v) => v.size === size);
   const soldOut = !selectedVariant || selectedVariant.stock === 0;
@@ -98,6 +105,24 @@ export default function ProductDetail({ product }) {
           </button>
         </div>
 
+        {!soldOut && (
+          <button
+            onClick={() => setBuyNowOpen(true)}
+            className="w-full py-3 border-[1.5px] border-ink font-mono text-xs uppercase tracking-wider rounded-sm hover:bg-ink hover:text-canvas transition-colors mb-3"
+          >
+            Buy now — express checkout
+          </button>
+        )}
+
+        {product.podEnabled && (
+          <button
+            onClick={() => router.push(`/custom?type=${product.category === "caps" ? "cap" : "tee"}&color=${encodeURIComponent(product.hex)}`)}
+            className="w-full py-3 bg-cobalt/10 border-[1.5px] border-cobalt text-cobalt font-mono text-xs uppercase tracking-wider rounded-sm hover:bg-cobalt hover:text-white transition-colors mb-3"
+          >
+            Personalize this design →
+          </button>
+        )}
+
         {product.category === "custom" && (
           <button
             onClick={() => router.push("/custom")}
@@ -106,6 +131,12 @@ export default function ProductDetail({ product }) {
             Open the design studio →
           </button>
         )}
+
+        <QuickBuyModal
+          open={buyNowOpen}
+          onClose={() => setBuyNowOpen(false)}
+          item={{ handle: product.handle, name: product.name, price: product.price, hex: product.hex, size, qty }}
+        />
 
         <div className="mt-8 pt-6 border-t border-dashed border-line font-mono text-xs text-ink/60 space-y-1.5">
           <p>240 GSM heavyweight cotton</p>

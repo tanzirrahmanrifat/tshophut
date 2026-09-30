@@ -3,6 +3,8 @@ import { getProducts } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
 import { TeeArt } from "@/components/ProductArt";
 import NewsletterForm from "@/components/NewsletterForm";
+import DropCountdown from "@/components/DropCountdown";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 export default function HomePage() {
   const products = getProducts();
@@ -29,7 +31,7 @@ export default function HomePage() {
               <Link href="/collections/tees" className="bg-ink text-canvas px-6 py-3.5 font-mono text-[13px] uppercase tracking-wider rounded-sm hover:bg-cobalt transition-colors">
                 Shop Drop 07
               </Link>
-              <span className="font-mono text-xs text-ink/45">37 left · closes Fri 6PM</span>
+              <span className="font-mono text-xs text-ink/45">37 left · <DropCountdown /></span>
             </div>
           </div>
           <div className="relative bg-ink flex items-center justify-center min-h-[320px]">
@@ -136,6 +138,10 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-[1220px] mx-auto px-5 sm:px-7">
+        <RecentlyViewed />
+      </div>
 
       {/* NEWSLETTER */}
       <section className="bg-ink text-canvas">

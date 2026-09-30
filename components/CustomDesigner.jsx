@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 
 const PRICES = { tee: 850, cap: 550 };
@@ -40,13 +41,19 @@ function money(n) {
 
 export default function CustomDesigner() {
   const { addItem } = useCart();
+  const searchParams = useSearchParams();
   const fileRef = useRef(null);
   const stageRef = useRef(null);
   const draggingRef = useRef(false);
 
-  const [product, setProduct] = useState("tee");
-  const [placement, setPlacement] = useState("front");
-  const [color, setColor] = useState(COLORS[0]);
+  const initialProduct = searchParams.get("type") === "cap" ? "cap" : "tee";
+  const initialColorHex = searchParams.get("color");
+  const initialColor =
+    COLORS.find((c) => c.hex.toLowerCase() === (initialColorHex || "").toLowerCase()) || COLORS[0];
+
+  const [product, setProduct] = useState(initialProduct);
+  const [placement, setPlacement] = useState(initialProduct === "cap" ? "panel" : "front");
+  const [color, setColor] = useState(initialColor);
   const [designs, setDesigns] = useState({}); // key: "tee:front" -> {src,x,y,scale}
   const [size, setSize] = useState("M");
   const [qty, setQty] = useState(1);

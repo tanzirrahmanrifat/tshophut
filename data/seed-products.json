@@ -15,12 +15,28 @@
     "rating": 4.8,
     "reviewCount": 32,
     "variants": [
-      { "size": "S", "stock": 6 },
-      { "size": "M", "stock": 11 },
-      { "size": "L", "stock": 9 },
-      { "size": "XL", "stock": 4 },
-      { "size": "XXL", "stock": 0 }
-    ]
+      {
+        "size": "S",
+        "stock": 6
+      },
+      {
+        "size": "M",
+        "stock": 11
+      },
+      {
+        "size": "L",
+        "stock": 9
+      },
+      {
+        "size": "XL",
+        "stock": 4
+      },
+      {
+        "size": "XXL",
+        "stock": 0
+      }
+    ],
+    "podEnabled": true
   },
   {
     "id": "p02",
@@ -38,12 +54,28 @@
     "rating": 4.7,
     "reviewCount": 21,
     "variants": [
-      { "size": "S", "stock": 5 },
-      { "size": "M", "stock": 8 },
-      { "size": "L", "stock": 7 },
-      { "size": "XL", "stock": 6 },
-      { "size": "XXL", "stock": 2 }
-    ]
+      {
+        "size": "S",
+        "stock": 5
+      },
+      {
+        "size": "M",
+        "stock": 8
+      },
+      {
+        "size": "L",
+        "stock": 7
+      },
+      {
+        "size": "XL",
+        "stock": 6
+      },
+      {
+        "size": "XXL",
+        "stock": 2
+      }
+    ],
+    "podEnabled": true
   },
   {
     "id": "p03",
@@ -55,18 +87,34 @@
     "hex": "#C1432E",
     "price": 720,
     "compareAtPrice": 950,
-    "description": "This week's markdown pick — same heavyweight cotton, discounted while stock lasts.",
+    "description": "This week's markdown pick \u2014 same heavyweight cotton, discounted while stock lasts.",
     "featured": true,
     "isNew": false,
     "rating": 4.6,
     "reviewCount": 18,
     "variants": [
-      { "size": "S", "stock": 3 },
-      { "size": "M", "stock": 4 },
-      { "size": "L", "stock": 2 },
-      { "size": "XL", "stock": 0 },
-      { "size": "XXL", "stock": 0 }
-    ]
+      {
+        "size": "S",
+        "stock": 3
+      },
+      {
+        "size": "M",
+        "stock": 4
+      },
+      {
+        "size": "L",
+        "stock": 2
+      },
+      {
+        "size": "XL",
+        "stock": 0
+      },
+      {
+        "size": "XXL",
+        "stock": 0
+      }
+    ],
+    "podEnabled": false
   },
   {
     "id": "p04",
@@ -84,12 +132,28 @@
     "rating": 4.5,
     "reviewCount": 14,
     "variants": [
-      { "size": "S", "stock": 7 },
-      { "size": "M", "stock": 10 },
-      { "size": "L", "stock": 8 },
-      { "size": "XL", "stock": 5 },
-      { "size": "XXL", "stock": 3 }
-    ]
+      {
+        "size": "S",
+        "stock": 7
+      },
+      {
+        "size": "M",
+        "stock": 10
+      },
+      {
+        "size": "L",
+        "stock": 8
+      },
+      {
+        "size": "XL",
+        "stock": 5
+      },
+      {
+        "size": "XXL",
+        "stock": 3
+      }
+    ],
+    "podEnabled": false
   },
   {
     "id": "p05",
@@ -107,12 +171,28 @@
     "rating": 4.9,
     "reviewCount": 27,
     "variants": [
-      { "size": "S", "stock": 4 },
-      { "size": "M", "stock": 9 },
-      { "size": "L", "stock": 9 },
-      { "size": "XL", "stock": 6 },
-      { "size": "XXL", "stock": 2 }
-    ]
+      {
+        "size": "S",
+        "stock": 4
+      },
+      {
+        "size": "M",
+        "stock": 9
+      },
+      {
+        "size": "L",
+        "stock": 9
+      },
+      {
+        "size": "XL",
+        "stock": 6
+      },
+      {
+        "size": "XXL",
+        "stock": 2
+      }
+    ],
+    "podEnabled": false
   },
   {
     "id": "p06",
@@ -130,12 +210,28 @@
     "rating": 4.6,
     "reviewCount": 9,
     "variants": [
-      { "size": "S", "stock": 2 },
-      { "size": "M", "stock": 5 },
-      { "size": "L", "stock": 5 },
-      { "size": "XL", "stock": 3 },
-      { "size": "XXL", "stock": 0 }
-    ]
+      {
+        "size": "S",
+        "stock": 2
+      },
+      {
+        "size": "M",
+        "stock": 5
+      },
+      {
+        "size": "L",
+        "stock": 5
+      },
+      {
+        "size": "XL",
+        "stock": 3
+      },
+      {
+        "size": "XXL",
+        "stock": 0
+      }
+    ],
+    "podEnabled": false
   },
   {
     "id": "p07",
@@ -147,18 +243,34 @@
     "hex": "#17140F",
     "price": 1000,
     "compareAtPrice": null,
-    "description": "This drop's graphic run — a front chest print, back placement, and a small sleeve hit.",
+    "description": "This drop's graphic run \u2014 a front chest print, back placement, and a small sleeve hit.",
     "featured": false,
     "isNew": true,
     "rating": 4.7,
     "reviewCount": 12,
     "variants": [
-      { "size": "S", "stock": 3 },
-      { "size": "M", "stock": 6 },
-      { "size": "L", "stock": 4 },
-      { "size": "XL", "stock": 2 },
-      { "size": "XXL", "stock": 0 }
-    ]
+      {
+        "size": "S",
+        "stock": 3
+      },
+      {
+        "size": "M",
+        "stock": 6
+      },
+      {
+        "size": "L",
+        "stock": 4
+      },
+      {
+        "size": "XL",
+        "stock": 2
+      },
+      {
+        "size": "XXL",
+        "stock": 0
+      }
+    ],
+    "podEnabled": false
   },
   {
     "id": "p08",
@@ -176,12 +288,28 @@
     "rating": 4.4,
     "reviewCount": 22,
     "variants": [
-      { "size": "S", "stock": 8 },
-      { "size": "M", "stock": 12 },
-      { "size": "L", "stock": 10 },
-      { "size": "XL", "stock": 7 },
-      { "size": "XXL", "stock": 4 }
-    ]
+      {
+        "size": "S",
+        "stock": 8
+      },
+      {
+        "size": "M",
+        "stock": 12
+      },
+      {
+        "size": "L",
+        "stock": 10
+      },
+      {
+        "size": "XL",
+        "stock": 7
+      },
+      {
+        "size": "XXL",
+        "stock": 4
+      }
+    ],
+    "podEnabled": true
   },
   {
     "id": "p09",
@@ -199,8 +327,12 @@
     "rating": 4.6,
     "reviewCount": 6,
     "variants": [
-      { "size": "One Size", "stock": 15 }
-    ]
+      {
+        "size": "One Size",
+        "stock": 15
+      }
+    ],
+    "podEnabled": false
   },
   {
     "id": "p10",
@@ -218,8 +350,12 @@
     "rating": 4.5,
     "reviewCount": 8,
     "variants": [
-      { "size": "One Size", "stock": 12 }
-    ]
+      {
+        "size": "One Size",
+        "stock": 12
+      }
+    ],
+    "podEnabled": true
   },
   {
     "id": "p11",
@@ -237,12 +373,28 @@
     "rating": 4.9,
     "reviewCount": 41,
     "variants": [
-      { "size": "S", "stock": 999 },
-      { "size": "M", "stock": 999 },
-      { "size": "L", "stock": 999 },
-      { "size": "XL", "stock": 999 },
-      { "size": "XXL", "stock": 999 }
-    ]
+      {
+        "size": "S",
+        "stock": 999
+      },
+      {
+        "size": "M",
+        "stock": 999
+      },
+      {
+        "size": "L",
+        "stock": 999
+      },
+      {
+        "size": "XL",
+        "stock": 999
+      },
+      {
+        "size": "XXL",
+        "stock": 999
+      }
+    ],
+    "podEnabled": true
   },
   {
     "id": "p12",
@@ -260,8 +412,12 @@
     "rating": 4.8,
     "reviewCount": 15,
     "variants": [
-      { "size": "One Size", "stock": 999 }
-    ]
+      {
+        "size": "One Size",
+        "stock": 999
+      }
+    ],
+    "podEnabled": true
   },
   {
     "id": "p13",
@@ -273,18 +429,34 @@
     "hex": "#2C46E0",
     "price": 750,
     "compareAtPrice": 1150,
-    "description": "Last of the striped run from Drop 05 — heavily discounted, limited sizes.",
+    "description": "Last of the striped run from Drop 05 \u2014 heavily discounted, limited sizes.",
     "featured": false,
     "isNew": false,
     "rating": 4.3,
     "reviewCount": 11,
     "variants": [
-      { "size": "S", "stock": 1 },
-      { "size": "M", "stock": 2 },
-      { "size": "L", "stock": 0 },
-      { "size": "XL", "stock": 1 },
-      { "size": "XXL", "stock": 0 }
-    ]
+      {
+        "size": "S",
+        "stock": 1
+      },
+      {
+        "size": "M",
+        "stock": 2
+      },
+      {
+        "size": "L",
+        "stock": 0
+      },
+      {
+        "size": "XL",
+        "stock": 1
+      },
+      {
+        "size": "XXL",
+        "stock": 0
+      }
+    ],
+    "podEnabled": false
   },
   {
     "id": "p14",
@@ -302,11 +474,27 @@
     "rating": 4.5,
     "reviewCount": 7,
     "variants": [
-      { "size": "S", "stock": 3 },
-      { "size": "M", "stock": 6 },
-      { "size": "L", "stock": 5 },
-      { "size": "XL", "stock": 2 },
-      { "size": "XXL", "stock": 1 }
-    ]
+      {
+        "size": "S",
+        "stock": 3
+      },
+      {
+        "size": "M",
+        "stock": 6
+      },
+      {
+        "size": "L",
+        "stock": 5
+      },
+      {
+        "size": "XL",
+        "stock": 2
+      },
+      {
+        "size": "XXL",
+        "stock": 1
+      }
+    ],
+    "podEnabled": false
   }
 ]

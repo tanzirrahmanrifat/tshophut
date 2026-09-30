@@ -34,6 +34,16 @@ export default function OrderConfirmationPage({ params }) {
         </div>
         <hr className="border-line mb-3" />
         <div className="flex justify-between font-mono text-sm mb-1">
+          <span>Subtotal</span>
+          <span>৳{order.subtotal.toLocaleString()}</span>
+        </div>
+        {order.discountAmount > 0 && (
+          <div className="flex justify-between font-mono text-sm mb-1 text-cobalt">
+            <span>Discount {order.discountCode ? `(${order.discountCode})` : ""}</span>
+            <span>−৳{order.discountAmount.toLocaleString()}</span>
+          </div>
+        )}
+        <div className="flex justify-between font-mono text-sm mb-1">
           <span>Shipping</span>
           <span>{order.shippingFee === 0 ? "Free" : `৳${order.shippingFee}`}</span>
         </div>

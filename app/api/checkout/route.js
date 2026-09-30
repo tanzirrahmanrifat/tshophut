@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createOrder, decrementStock, getProductByHandle } from "@/lib/db";
+import { validateDiscount } from "@/lib/discounts";
 
 function genOrderId() {
   const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
@@ -8,7 +9,7 @@ function genOrderId() {
 
 export async function POST(request) {
   const body = await request.json();
-  const { items, shipping, paymentMethod } = body;
+  const { items, shipping, paymentMethod, discountCode } = body;
 
   if (!items || items.length === 0) {
     return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
@@ -25,8 +26,17 @@ export async function POST(request) {
   // NOTE: in production, re-price every line server-side from the product
   // catalog instead of trusting client-sent prices, to prevent tampering.
   const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const shippingFee = subtotal >= 2000 ? 0 : 80;
-  const total = subtotal + shippingFee;
+
+  // Discounts are always re-validated here — never trust a client-sent amount.
+  let discount = null;
+  if (discountCode) {
+    const result = validateDiscount(discountCode, subtotal);
+    if (result.valid) discount = result;
+  }
+  const discountAmount = discount ? discount.amount : 0;
+  const freeShippingFromCode = discount?.freeShipping || false;
+  const shippingFee = subtotal >= 2000 || freeShippingFromCode ? 0 : 80;
+  const total = Math.max(0, subtotal - discountAmount) + shippingFee;
 
   const order = {
     id: genOrderId(),
@@ -36,6 +46,8 @@ export async function POST(request) {
     items,
     shipping,
     subtotal,
+    discountCode: discount?.code || null,
+    discountAmount,
     shippingFee,
     total,
   };

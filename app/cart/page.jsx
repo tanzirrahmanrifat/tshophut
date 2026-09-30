@@ -5,6 +5,9 @@ import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
   const { items, updateQty, removeItem, subtotal, hydrated } = useCart();
+  const FREE_SHIP_THRESHOLD = 2000;
+  const remaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
+  const progress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
 
   if (!hydrated) return null;
 
@@ -21,6 +24,19 @@ export default function CartPage() {
         </div>
       ) : (
         <>
+          <div className="mb-8">
+            <p className="font-mono text-xs text-ink/60 mb-2">
+              {remaining === 0 ? (
+                <span className="text-cobalt">You&apos;ve unlocked free shipping 🎉</span>
+              ) : (
+                <>Add <b>৳{remaining.toLocaleString()}</b> more for free shipping</>
+              )}
+            </p>
+            <div className="h-1.5 bg-canvas-dim rounded-full overflow-hidden">
+              <div className="h-full bg-cobalt transition-all" style={{ width: `${progress}%` }} />
+            </div>
+          </div>
+
           <div className="space-y-5 mb-10">
             {items.map((item, idx) => (
               <div key={idx} className="flex gap-5 border-b border-line pb-5">

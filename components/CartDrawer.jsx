@@ -5,6 +5,9 @@ import { useCart } from "@/context/CartContext";
 
 export default function CartDrawer({ open, onClose }) {
   const { items, updateQty, removeItem, subtotal } = useCart();
+  const FREE_SHIP_THRESHOLD = 2000;
+  const remaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
+  const progress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
 
   return (
     <>
@@ -26,6 +29,20 @@ export default function CartDrawer({ open, onClose }) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+          {items.length > 0 && (
+            <div className="pb-1">
+              <p className="font-mono text-[11px] text-ink/60 mb-2">
+                {remaining === 0 ? (
+                  <span className="text-cobalt">You&apos;ve unlocked free shipping 🎉</span>
+                ) : (
+                  <>Add <b>৳{remaining.toLocaleString()}</b> more for free shipping</>
+                )}
+              </p>
+              <div className="h-1.5 bg-canvas-dim rounded-full overflow-hidden">
+                <div className="h-full bg-cobalt transition-all" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          )}
           {items.length === 0 && (
             <p className="text-ink/60 font-mono text-sm mt-8 text-center">
               Your cart is empty.

@@ -30,6 +30,7 @@ export async function POST(request) {
     description: body.description || "",
     featured: !!body.featured,
     isNew: !!body.isNew,
+    podEnabled: !!body.podEnabled,
     rating: body.rating || 4.5,
     reviewCount: body.reviewCount || 0,
     variants: body.variants || [{ size: "M", stock: 10 }],

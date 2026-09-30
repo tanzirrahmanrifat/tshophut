@@ -39,18 +39,43 @@ pull this apart further:
 
 - **Storefront**: homepage, collection pages (Tees / Caps / Print on Demand)
   with fit/colour/sort filters, product detail pages with size selection and
-  live stock, search, wishlist (saved locally per device).
+  live stock, search, wishlist (saved locally per device), recently viewed
+  products, and a live countdown to when the current drop closes.
 - **Print on Demand designer** (`/custom`): choose a tee or cap, pick a
   colour, upload your own artwork per placement (front, back, neck label,
   left sleeve, right sleeve — tee only), drag/resize it, and add the
   finished design straight to the cart. Pricing updates live per placement
-  used.
-- **Cart & checkout**: cart drawer + full cart page, a checkout form that
+  used. Any product can also link straight into the designer pre-loaded
+  with its colour — see "Print on Demand control" below.
+- **Buy Now / quick checkout**: every product card and the product detail
+  page has a "Buy now" button that skips the cart entirely — it opens a
+  popup that takes shipping details and places a single-item Cash on
+  Delivery order immediately.
+- **Cart & checkout**: cart drawer + full cart page (both show a free
+  -shipping progress bar), a checkout form with a discount code field, that
   writes a real order to `data/orders.json` and decrements stock in
   `data/products.json`, and an order confirmation / tracking page.
+  Starter discount codes (`lib/discounts.js`): `WELCOME10` (10% off),
+  `FLAT100` (৳100 off), `FREESHIP` (free shipping) — edit that file to
+  add/remove codes; the server re-validates every code at checkout so
+  nothing client-sent is trusted.
+- **Frequently bought together**: on every product page, a bundle of the
+  current product + 2 related items with a combined "add selected to cart".
 - **Admin**: password-gated dashboard, full product CRUD (add/edit/delete,
-  price, stock, images-as-colour-swatch, featured/new flags), and an orders
-  view with status updates (Processing → Confirmed → Shipped → Delivered).
+  price, stock, images-as-colour-swatch, featured/new flags), a one-click
+  **Print on Demand toggle per product** right in the product list (flips
+  whether customers see a "Personalize this design" button on that
+  product), and an orders view with status updates (Processing → Confirmed
+  → Shipped → Delivered).
+
+## Print on Demand control
+
+Every product has a `podEnabled` flag. In `/admin/products`, each row has a
+toggle switch on the right — flip it and that product's detail page
+immediately shows a "Personalize this design →" button that opens `/custom`
+pre-loaded with that product's colour and tee/cap type. The two dedicated
+"Custom Print Tee/Cap" blanks and a few example products ship with it on;
+everything else ships with it off so you decide what's customizable.
 
 ## What's intentionally stubbed
 

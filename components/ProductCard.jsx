@@ -1,14 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import ProductArt from "./ProductArt";
 import { useCart } from "@/context/CartContext";
+import QuickBuyModal from "./QuickBuyModal";
 
 export default function ProductCard({ product }) {
   const { wishlist, toggleWishlist } = useCart();
   const isWishlisted = wishlist.includes(product.handle);
   const totalStock = product.variants.reduce((s, v) => s + v.stock, 0);
   const soldOut = totalStock === 0;
+  const [buyNowOpen, setBuyNowOpen] = useState(false);
+  const firstInStock = product.variants.find((v) => v.stock > 0);
+
+  function handleBuyNow(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (soldOut) return;
+    setBuyNowOpen(true);
+  }
 
   return (
     <article className="relative bg-paper border border-line flex flex-col group transition-transform hover:-translate-y-1 hover:shadow-lg">
@@ -56,7 +67,30 @@ export default function ProductCard({ product }) {
           </span>
           <span className="eyebrow">★ {product.rating}</span>
         </div>
+        {!soldOut && (
+          <button
+            onClick={handleBuyNow}
+            className="w-full mt-3 py-2 border-[1.5px] border-ink font-mono text-[11px] uppercase tracking-wider rounded-sm hover:bg-ink hover:text-canvas transition-colors"
+          >
+            Buy now
+          </button>
+        )}
       </div>
+
+      {!soldOut && (
+        <QuickBuyModal
+          open={buyNowOpen}
+          onClose={() => setBuyNowOpen(false)}
+          item={{
+            handle: product.handle,
+            name: product.name,
+            price: product.price,
+            hex: product.hex,
+            size: firstInStock?.size || product.variants[0].size,
+            qty: 1,
+          }}
+        />
+      )}
     </article>
   );
 }

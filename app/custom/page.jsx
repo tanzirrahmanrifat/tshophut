@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import CustomDesigner from "@/components/CustomDesigner";
 
 export default function CustomPage() {
@@ -11,7 +12,9 @@ export default function CustomPage() {
           back, neck label, or either sleeve. We print and ship — no minimum order.
         </p>
       </div>
-      <CustomDesigner />
+      <Suspense fallback={null}>
+        <CustomDesigner />
+      </Suspense>
     </main>
   );
 }
