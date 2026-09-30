@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getProducts } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
 import { TeeArt } from "@/components/ProductArt";
+import NewsletterForm from "@/components/NewsletterForm";
 
 export default function HomePage() {
   const products = getProducts();
@@ -140,17 +141,7 @@ export default function HomePage() {
       <section className="bg-ink text-canvas">
         <div className="max-w-[1220px] mx-auto px-5 sm:px-7 flex items-center justify-between gap-10 py-14 flex-wrap">
           <h2 className="font-display text-3xl sm:text-4xl max-w-[12ch]">Don&apos;t miss the next drop.</h2>
-          <form className="flex max-w-[420px] w-full" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              required
-              placeholder="you@email.com"
-              className="flex-1 bg-transparent border-[1.5px] border-canvas px-4 py-3.5 font-mono text-sm placeholder:text-canvas/50"
-            />
-            <button className="bg-cobalt border-[1.5px] border-cobalt px-5 font-mono text-xs uppercase tracking-wider hover:bg-canvas hover:text-ink transition-colors">
-              Notify me
-            </button>
-          </form>
+          <NewsletterForm />
         </div>
       </section>
     </main>

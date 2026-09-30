@@ -16,6 +16,25 @@ Open http://localhost:3000. The storefront and admin both work out of the box.
 Admin panel: http://localhost:3000/admin — password `tshophut2026` (change it
 by copying `.env.example` to `.env` and setting `ADMIN_PASSWORD`).
 
+## Deploying to Vercel
+
+Two things were fixed specifically for a Vercel deploy — worth knowing if you
+pull this apart further:
+
+1. **No event handlers in Server Components.** The homepage is a Server
+   Component; its newsletter form now lives in its own `"use client"`
+   component (`components/NewsletterForm.jsx`) instead of an inline
+   `onSubmit` on the page itself, which Next.js can't serialize.
+2. **Read-only filesystem at runtime.** Vercel's serverless functions can't
+   write to the project folder — only to `/tmp`, and `/tmp` is wiped on
+   cold starts/redeploys. `lib/db.js` now writes to `/tmp` when
+   `process.env.VERCEL` is set, so checkout and the admin panel work for a
+   demo instead of crashing with `EROFS`. **This means real order/product
+   data still won't persist long-term on Vercel** — for a real launch,
+   replace the file-based functions in `lib/db.js` with calls to a real
+   database (Vercel Postgres, Neon, PlanetScale, Supabase all work fine with
+   Next.js) — every route already goes through this one file.
+
 ## What's included
 
 - **Storefront**: homepage, collection pages (Tees / Caps / Print on Demand)
