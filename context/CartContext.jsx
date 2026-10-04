@@ -11,10 +11,13 @@ function lineKey(item) {
   return [item.handle, item.size, item.customSignature || ""].join("::");
 }
 
+const DEFAULT_SETTINGS = { freeShippingThreshold: 2000, standardShippingFee: 80, currencySymbol: "৳" };
+
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [hydrated, setHydrated] = useState(false);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
   useEffect(() => {
     try {
@@ -26,6 +29,11 @@ export function CartProvider({ children }) {
       // ignore corrupted storage
     }
     setHydrated(true);
+
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((data) => data.settings && setSettings(data.settings))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -88,6 +96,7 @@ export function CartProvider({ children }) {
     wishlist,
     toggleWishlist,
     hydrated,
+    settings,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

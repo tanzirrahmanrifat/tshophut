@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
-  const { items, updateQty, removeItem, subtotal, hydrated } = useCart();
-  const FREE_SHIP_THRESHOLD = 2000;
-  const remaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
-  const progress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
+  const { items, updateQty, removeItem, subtotal, hydrated, settings } = useCart();
+  const threshold = settings.freeShippingThreshold;
+  const remaining = Math.max(0, threshold - subtotal);
+  const progress = Math.min(100, (subtotal / threshold) * 100);
 
   if (!hydrated) return null;
 

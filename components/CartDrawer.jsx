@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 
 export default function CartDrawer({ open, onClose }) {
-  const { items, updateQty, removeItem, subtotal } = useCart();
-  const FREE_SHIP_THRESHOLD = 2000;
-  const remaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
-  const progress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
+  const { items, updateQty, removeItem, subtotal, settings } = useCart();
+  const threshold = settings.freeShippingThreshold;
+  const remaining = Math.max(0, threshold - subtotal);
+  const progress = Math.min(100, (subtotal / threshold) * 100);
 
   return (
     <>

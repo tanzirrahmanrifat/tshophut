@@ -31,6 +31,7 @@ export async function POST(request) {
     featured: !!body.featured,
     isNew: !!body.isNew,
     podEnabled: !!body.podEnabled,
+    imageUrl: body.imageUrl || null,
     rating: body.rating || 4.5,
     reviewCount: body.reviewCount || 0,
     variants: body.variants || [{ size: "M", stock: 10 }],

@@ -35,6 +35,18 @@ pull this apart further:
    database (Vercel Postgres, Neon, PlanetScale, Supabase all work fine with
    Next.js) — every route already goes through this one file.
 
+## Design pass (v3)
+
+The homepage and header were redesigned with layout patterns adapted from
+premium e-commerce sites (mega-menu navigation, a rotating campaign hero,
+tabbed horizontal product rails, an animated stats/impact section, and a
+trust-badge row) — reimplemented from scratch in Tshophut's own visual
+language. No third-party photography, copy, or certification logos were
+copied; the "impact" numbers and trust badges are placeholder content for a
+small Bangladesh streetwear brand (tee count, drop count, GSM weight, COD,
+returns) — edit `components/StatsCounter.jsx` and `components/TrustBadges.jsx`
+directly to reflect your real numbers before launch.
+
 ## What's included
 
 - **Storefront**: homepage, collection pages (Tees / Caps / Print on Demand)
@@ -67,6 +79,36 @@ pull this apart further:
   whether customers see a "Personalize this design" button on that
   product), and an orders view with status updates (Processing → Confirmed
   → Shipped → Delivered).
+
+## Admin dashboard (v2)
+
+`/admin` is now a proper dashboard shell — a persistent sidebar (Dashboard,
+Products, Orders, Discounts, Settings) wraps every admin page, and the whole
+`/admin/*` tree is gated by one shared layout rather than each page checking
+auth itself.
+
+- **Dashboard**: revenue trend (last 7 days), orders-by-status breakdown,
+  recent orders, and a low-stock table — all computed live from
+  `data/orders.json` / `data/products.json`, no external analytics needed.
+- **Products**: stock is now editable **per size** directly in the form (not
+  just a single number), plus an optional **image URL** field — paste a
+  hosted photo URL and it replaces the illustrated placeholder everywhere
+  (product cards, product page, admin list); leave it blank to keep the
+  illustration. The Print-on-Demand toggle from before is still there.
+- **Orders**: search by order ID/name/phone, filter by status, **export the
+  current view to CSV**, and click through to a full order detail page
+  (`/admin/orders/[id]`) with the shipping address, line items, payment
+  breakdown, and a status selector.
+- **Discounts** (`/admin/discounts`): discount codes are no longer
+  hardcoded — create/edit/delete percent, flat-amount, or free-shipping
+  codes and flip them active/inactive with a switch. The checkout route
+  re-validates every code against this same list server-side.
+- **Settings** (`/admin/settings`): store name, currency symbol, support
+  contact info, the free-shipping threshold, the standard shipping fee, and
+  a kill switch for Cash on Delivery — all editable without touching code.
+  The storefront (cart drawer, cart page, checkout) reads these live via a
+  public `/api/settings` endpoint, so changing the threshold here updates
+  the free-shipping progress bar and checkout math everywhere at once.
 
 ## Print on Demand control
 

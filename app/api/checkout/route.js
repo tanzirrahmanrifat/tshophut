@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createOrder, decrementStock, getProductByHandle } from "@/lib/db";
 import { validateDiscount } from "@/lib/discounts";
+import { getSettings } from "@/lib/settings";
 
 function genOrderId() {
   const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
@@ -17,9 +18,11 @@ export async function POST(request) {
   if (!shipping || !shipping.name || !shipping.phone || !shipping.address) {
     return NextResponse.json({ error: "Missing shipping details" }, { status: 400 });
   }
-  if (paymentMethod !== "cod") {
+  const settings = getSettings();
+  if (paymentMethod !== "cod" || !settings.codEnabled) {
     // Real bKash/card integration would go here. For now COD is the only
-    // live payment path — the front end already disables the other options.
+    // live payment path — the front end already disables the other options,
+    // and the admin can switch COD off entirely from Settings.
     return NextResponse.json({ error: "That payment method isn't live yet" }, { status: 400 });
   }
 
@@ -35,7 +38,8 @@ export async function POST(request) {
   }
   const discountAmount = discount ? discount.amount : 0;
   const freeShippingFromCode = discount?.freeShipping || false;
-  const shippingFee = subtotal >= 2000 || freeShippingFromCode ? 0 : 80;
+  const shippingFee =
+    subtotal >= settings.freeShippingThreshold || freeShippingFromCode ? 0 : settings.standardShippingFee;
   const total = Math.max(0, subtotal - discountAmount) + shippingFee;
 
   const order = {

@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+const DEFAULT_VARIANTS = [
+  { size: "S", stock: 10 },
+  { size: "M", stock: 10 },
+  { size: "L", stock: 10 },
+  { size: "XL", stock: 10 },
+  { size: "XXL", stock: 10 },
+];
+
 const BLANK = {
   name: "",
   handle: "",
@@ -15,6 +23,8 @@ const BLANK = {
   featured: false,
   isNew: true,
   podEnabled: false,
+  imageUrl: "",
+  variants: DEFAULT_VARIANTS,
 };
 
 export default function AdminProductsPage() {
@@ -22,6 +32,7 @@ export default function AdminProductsPage() {
   const [form, setForm] = useState(BLANK);
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
 
   function load() {
     fetch("/api/admin/products")
@@ -41,6 +52,13 @@ export default function AdminProductsPage() {
     setForm((f) => ({ ...f, [field]: value }));
   }
 
+  function updateVariantStock(size, stock) {
+    setForm((f) => ({
+      ...f,
+      variants: f.variants.map((v) => (v.size === size ? { ...v, stock: Number(stock) || 0 } : v)),
+    }));
+  }
+
   function startEdit(p) {
     setEditingId(p.id);
     setForm({
@@ -56,6 +74,7 @@ export default function AdminProductsPage() {
       featured: p.featured,
       isNew: p.isNew,
       podEnabled: p.podEnabled,
+      imageUrl: p.imageUrl || "",
       variants: p.variants,
     });
   }
@@ -72,6 +91,7 @@ export default function AdminProductsPage() {
       ...form,
       price: Number(form.price),
       compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
+      imageUrl: form.imageUrl || null,
     };
     const url = editingId ? `/api/admin/products/${editingId}` : "/api/admin/products";
     const method = editingId ? "PUT" : "POST";
@@ -96,7 +116,6 @@ export default function AdminProductsPage() {
   }
 
   async function togglePod(product) {
-    // Optimistic update so the switch feels instant in the dashboard.
     setProducts((prev) =>
       prev.map((p) => (p.id === product.id ? { ...p, podEnabled: !p.podEnabled } : p))
     );
@@ -108,15 +127,29 @@ export default function AdminProductsPage() {
   }
 
   if (products === null) {
-    return <main className="max-w-[1220px] mx-auto px-5 sm:px-7 py-14">Loading…</main>;
+    return <main className="px-5 sm:px-8 py-10 max-w-[1400px] mx-auto">Loading…</main>;
   }
 
-  return (
-    <main className="max-w-[1220px] mx-auto px-5 sm:px-7 py-14">
-      <span className="eyebrow">Admin</span>
-      <h1 className="font-display text-3xl sm:text-4xl mt-1 mb-10">Products</h1>
+  const filtered = products.filter(
+    (p) => !query || p.name.toLowerCase().includes(query.toLowerCase()) || p.handle.includes(query.toLowerCase())
+  );
 
-      <div className="grid lg:grid-cols-[1fr_1.3fr] gap-10">
+  return (
+    <main className="px-5 sm:px-8 py-10 max-w-[1400px] mx-auto">
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+        <div>
+          <span className="eyebrow">Admin</span>
+          <h1 className="font-display text-3xl sm:text-4xl mt-1">Products</h1>
+        </div>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search products…"
+          className="border border-line rounded-sm px-3.5 py-2 text-sm font-mono w-64 outline-none focus:border-cobalt bg-paper"
+        />
+      </div>
+
+      <div className="grid lg:grid-cols-[420px_1fr] gap-8">
         <form onSubmit={handleSubmit} className="space-y-3 bg-paper border border-line p-6 h-fit">
           <span className="eyebrow">{editingId ? "Edit product" : "New product"}</span>
           <Field label="Name" value={form.name} onChange={(v) => update("name", v)} required />
@@ -133,8 +166,33 @@ export default function AdminProductsPage() {
             <Field label="Price (৳)" value={form.price} onChange={(v) => update("price", v)} type="number" />
             <Field label="Compare-at price (optional)" value={form.compareAtPrice} onChange={(v) => update("compareAtPrice", v)} type="number" />
           </div>
+          <Field
+            label="Image URL (optional — leave blank to use the illustrated art)"
+            value={form.imageUrl}
+            onChange={(v) => update("imageUrl", v)}
+            placeholder="https://…"
+          />
           <Field label="Description" value={form.description} onChange={(v) => update("description", v)} textarea />
-          <div className="flex gap-5 font-mono text-xs">
+
+          <div>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-ink/50 block mb-2">Stock by size</span>
+            <div className="grid grid-cols-5 gap-2">
+              {form.variants.map((v) => (
+                <label key={v.size} className="block">
+                  <span className="font-mono text-[10px] text-ink/45 block mb-1 text-center">{v.size}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={v.stock}
+                    onChange={(e) => updateVariantStock(v.size, e.target.value)}
+                    className="w-full border border-line rounded-sm px-2 py-1.5 bg-canvas text-sm text-center outline-none focus:border-cobalt"
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-5 font-mono text-xs pt-1">
             <label className="flex items-center gap-2">
               <input type="checkbox" checked={form.featured} onChange={(e) => update("featured", e.target.checked)} />
               Featured on homepage
@@ -148,6 +206,7 @@ export default function AdminProductsPage() {
             <input type="checkbox" checked={form.podEnabled} onChange={(e) => update("podEnabled", e.target.checked)} />
             Allow customers to personalize this product (Print on Demand)
           </label>
+
           {error && <p className="text-stamp font-mono text-xs">{error}</p>}
           <div className="flex gap-3 pt-2">
             <button className="flex-1 bg-ink text-canvas py-2.5 font-mono text-xs uppercase tracking-wider rounded-sm">
@@ -166,44 +225,53 @@ export default function AdminProductsPage() {
             <span>Product</span>
             <span>Print on Demand</span>
           </div>
-          {products.map((p) => (
-            <div key={p.id} className="flex items-center gap-4 border border-line p-4">
-              <div className="w-10 h-10 rounded-full flex-none" style={{ background: p.hex }} />
-              <div className="flex-1">
-                <p className="font-semibold text-sm">{p.name}</p>
-                <p className="font-mono text-xs text-ink/50">
-                  {p.category} · ৳{p.price} · stock {p.variants.reduce((s, v) => s + v.stock, 0)}
-                </p>
-              </div>
-              <button
-                onClick={() => togglePod(p)}
-                aria-label="Toggle print on demand"
-                title="Toggle print-on-demand for this product"
-                className={`relative w-11 h-6 rounded-full flex-none transition-colors ${
-                  p.podEnabled ? "bg-cobalt" : "bg-ink/15"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                    p.podEnabled ? "translate-x-[22px]" : "translate-x-0.5"
+          {filtered.map((p) => {
+            const totalStock = p.variants.reduce((s, v) => s + v.stock, 0);
+            return (
+              <div key={p.id} className="flex items-center gap-4 border border-line bg-paper p-4">
+                {p.imageUrl ? (
+                  <img src={p.imageUrl} alt={p.name} className="w-10 h-10 rounded-full object-cover flex-none" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full flex-none" style={{ background: p.hex }} />
+                )}
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">{p.name}</p>
+                  <p className="font-mono text-xs text-ink/50">
+                    {p.category} · ৳{p.price} · stock {totalStock}
+                    {totalStock === 0 && <span className="text-stamp"> · sold out</span>}
+                  </p>
+                </div>
+                <button
+                  onClick={() => togglePod(p)}
+                  aria-label="Toggle print on demand"
+                  title="Toggle print-on-demand for this product"
+                  className={`relative w-11 h-6 rounded-full flex-none transition-colors ${
+                    p.podEnabled ? "bg-cobalt" : "bg-ink/15"
                   }`}
-                />
-              </button>
-              <button onClick={() => startEdit(p)} className="font-mono text-xs underline">
-                Edit
-              </button>
-              <button onClick={() => handleDelete(p.id)} className="font-mono text-xs text-stamp underline">
-                Delete
-              </button>
-            </div>
-          ))}
+                >
+                  <span
+                    className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                      p.podEnabled ? "translate-x-[22px]" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+                <button onClick={() => startEdit(p)} className="font-mono text-xs underline">
+                  Edit
+                </button>
+                <button onClick={() => handleDelete(p.id)} className="font-mono text-xs text-stamp underline">
+                  Delete
+                </button>
+              </div>
+            );
+          })}
+          {filtered.length === 0 && <p className="font-mono text-sm text-ink/50 py-6">No products match.</p>}
         </div>
       </div>
     </main>
   );
 }
 
-function Field({ label, value, onChange, required, type = "text", textarea }) {
+function Field({ label, value, onChange, required, type = "text", textarea, placeholder }) {
   const Tag = textarea ? "textarea" : "input";
   return (
     <label className="block">
@@ -212,6 +280,7 @@ function Field({ label, value, onChange, required, type = "text", textarea }) {
         type={textarea ? undefined : type}
         value={value}
         required={required}
+        placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         rows={textarea ? 3 : undefined}
         className="w-full border border-line rounded-sm px-3 py-2 bg-canvas text-sm outline-none focus:border-cobalt"

@@ -40,7 +40,15 @@ export default function ProductCard({ product }) {
             Sold out
           </span>
         )}
-        <ProductArt category={product.category} hex={product.hex} className="w-3/5 relative z-[1] transition-transform group-hover:scale-105 group-hover:-rotate-1" />
+        {product.imageUrl ? (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover z-[1] transition-transform group-hover:scale-105"
+          />
+        ) : (
+          <ProductArt category={product.category} hex={product.hex} className="w-3/5 relative z-[1] transition-transform group-hover:scale-105 group-hover:-rotate-1" />
+        )}
       </Link>
 
       <button

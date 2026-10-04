@@ -40,8 +40,12 @@ export default function ProductDetail({ product }) {
 
   return (
     <div className="grid md:grid-cols-2 gap-12">
-      <div className="bg-canvas-dim border border-line aspect-square flex items-center justify-center">
-        <ProductArt category={product.category} hex={product.hex} className="w-1/2" />
+      <div className="bg-canvas-dim border border-line aspect-square flex items-center justify-center overflow-hidden">
+        {product.imageUrl ? (
+          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+        ) : (
+          <ProductArt category={product.category} hex={product.hex} className="w-1/2" />
+        )}
       </div>
 
       <div>

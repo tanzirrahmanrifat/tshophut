@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 
 export default function CheckoutPage() {
-  const { items, subtotal, clearCart, hydrated } = useCart();
+  const { items, subtotal, clearCart, hydrated, settings } = useCart();
   const router = useRouter();
   const [form, setForm] = useState({ name: "", phone: "", address: "", city: "", note: "" });
   const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -18,7 +18,8 @@ export default function CheckoutPage() {
 
   const discountAmount = discount ? discount.amount : 0;
   const freeShippingFromCode = discount?.freeShipping || false;
-  const shippingFee = subtotal >= 2000 || freeShippingFromCode || subtotal === 0 ? 0 : 80;
+  const shippingFee =
+    subtotal >= settings.freeShippingThreshold || freeShippingFromCode || subtotal === 0 ? 0 : settings.standardShippingFee;
   const total = Math.max(0, subtotal - discountAmount) + shippingFee;
 
   function update(field, value) {
@@ -100,20 +101,26 @@ export default function CheckoutPage() {
               <PaymentOption
                 id="cod"
                 label="Cash on Delivery"
-                sub="Pay when your order arrives"
-                active={paymentMethod === "cod"}
+                sub={settings.codEnabled ? "Pay when your order arrives" : "Temporarily unavailable"}
+                active={paymentMethod === "cod" && settings.codEnabled}
+                disabled={!settings.codEnabled}
                 onSelect={() => setPaymentMethod("cod")}
               />
               <PaymentOption id="bkash" label="bKash" sub="Coming soon" disabled />
               <PaymentOption id="card" label="Credit / Debit Card" sub="Coming soon" disabled />
             </div>
+            {!settings.codEnabled && (
+              <p className="font-mono text-xs text-stamp mt-2">
+                No payment method is live right now — please check back shortly.
+              </p>
+            )}
           </div>
 
           {error && <p className="text-stamp font-mono text-sm">{error}</p>}
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !settings.codEnabled}
             className="w-full bg-ink text-canvas py-3.5 font-mono text-xs uppercase tracking-wider rounded-sm hover:bg-cobalt transition-colors disabled:opacity-50"
           >
             {submitting ? "Placing order…" : `Place order · ৳${total.toLocaleString()}`}

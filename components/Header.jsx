@@ -6,17 +6,35 @@ import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import CartDrawer from "./CartDrawer";
 
+const MEGA = {
+  Tees: [
+    { label: "All Tees", href: "/collections/tees" },
+    { label: "Regular Fit", href: "/collections/tees" },
+    { label: "Oversized", href: "/collections/tees" },
+    { label: "On Sale", href: "/collections/tees?sort=sale" },
+  ],
+  Caps: [
+    { label: "All Caps", href: "/collections/caps" },
+  ],
+  Custom: [
+    { label: "Design Studio", href: "/custom" },
+    { label: "Custom Tee", href: "/products/custom-print-tee" },
+    { label: "Custom Cap", href: "/products/custom-print-cap" },
+  ],
+};
+
 const NAV = [
-  { href: "/collections/tees", label: "All Tees" },
-  { href: "/collections/caps", label: "Caps" },
-  { href: "/custom", label: "Print on Demand" },
-  { href: "/#story", label: "Our Story" },
+  { label: "Tees", href: "/collections/tees" },
+  { label: "Caps", href: "/collections/caps" },
+  { label: "Custom", href: "/custom" },
+  { label: "Our Story", href: "/#story" },
 ];
 
 export default function Header() {
   const { count, wishlist } = useCart();
   const [cartOpen, setCartOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [openMenu, setOpenMenu] = useState(null);
   const router = useRouter();
 
   function submitSearch(e) {
@@ -36,11 +54,29 @@ export default function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 font-mono text-xs tracking-wider uppercase text-ink/70">
-          {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className="hover:text-ink transition-colors">
-              {n.label}
-            </Link>
-          ))}
+          {NAV.map((n) => {
+            const menu = MEGA[n.label];
+            return (
+              <div key={n.label} className="relative" onMouseEnter={() => menu && setOpenMenu(n.label)} onMouseLeave={() => setOpenMenu(null)}>
+                <Link href={n.href} className="hover:text-ink transition-colors py-2 block">
+                  {n.label}
+                </Link>
+                {menu && openMenu === n.label && (
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 bg-paper border border-line shadow-lg min-w-[180px] py-2 z-50">
+                    {menu.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className="block px-4 py-2 text-ink/70 hover:text-cobalt hover:bg-canvas-dim normal-case font-body text-sm"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
 
         <form onSubmit={submitSearch} className="hidden lg:flex items-center border border-line rounded-sm px-3 py-1.5 gap-2 w-56">
