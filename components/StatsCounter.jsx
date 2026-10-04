@@ -48,8 +48,12 @@ export default function StatsCounter() {
   }, []);
 
   return (
-    <section ref={ref} className="bg-ink text-canvas py-14 sm:py-16">
-      <div className="max-w-[1220px] mx-auto px-5 sm:px-7">
+    <section ref={ref} className="relative bg-ink text-canvas py-14 sm:py-16 overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-[0.07] pointer-events-none"
+        style={{ backgroundImage: "radial-gradient(circle, #F0EEE6 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+      />
+      <div className="relative max-w-[1220px] mx-auto px-5 sm:px-7">
         <div className="text-center mb-10">
           <span className="eyebrow text-canvas/50">Small batch, real numbers</span>
           <h2 className="font-display text-2xl sm:text-3xl mt-2 max-w-[36ch] mx-auto">

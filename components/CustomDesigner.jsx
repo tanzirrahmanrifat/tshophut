@@ -130,7 +130,7 @@ export default function CustomDesigner() {
   const placementKeys = Object.keys(ZONES[product]);
 
   return (
-    <div className="grid md:grid-cols-[.95fr_1.05fr] gap-12 bg-paper border border-line p-6 sm:p-9">
+    <div className="grid md:grid-cols-[.95fr_1.05fr] gap-12 bg-paper border border-line p-6 sm:p-9 shadow-[0_18px_40px_rgba(23,20,15,0.08)]">
       {/* preview */}
       <div className="flex flex-col gap-3">
         <div className="flex gap-2">

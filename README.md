@@ -80,6 +80,36 @@ directly to reflect your real numbers before launch.
   product), and an orders view with status updates (Processing → Confirmed
   → Shipped → Delivered).
 
+## Visual design pass (v5)
+
+- **Richer product illustrations**: the tee/cap line art now has shading
+  (a gradient instead of flat fill), collar/seam/hem detail lines, and a
+  soft drop shadow — used everywhere (cards, product page, cart, hero), so
+  this one change lifts the whole site's perceived quality.
+- **Decorative backgrounds**: a subtle halftone-dot texture and soft glow
+  behind the hero art, the stats section, and the footer, instead of flat
+  colour blocks.
+- **Deeper shadows & motion**: product cards, the hero CTA, and the Print on
+  Demand studio now lift with a soft shadow on hover instead of a flat
+  border change; hero copy fades/slides in on each slide change.
+- **Small refinements**: trust-badge icons sit in soft circular chips,
+  filter dropdowns highlight on focus, product titles tint cobalt on hover.
+
+## Storefront polish pass (v4)
+
+- **Buy Now, more prominent**: product cards now have both "Add to cart" and
+  "Buy now" side by side (plus size-availability chips), and the product
+  page gets a **sticky mobile buy bar** that slides up once you scroll past
+  the main buy box — a common premium mobile pattern. The quick-checkout
+  popup itself was redesigned with an item thumbnail and a real
+  subtotal/shipping/total breakdown instead of just a single price line.
+- **Toast confirmations**: adding to cart now shows a small toast
+  ("Added X to cart — View cart") instead of only an inline button state
+  change, site-wide.
+- **Breadcrumbs** on collection and product pages.
+- **Checkout step indicator** (Cart → Information → Payment) at the top of
+  the checkout page.
+
 ## Admin dashboard (v2)
 
 `/admin` is now a proper dashboard shell — a persistent sidebar (Dashboard,

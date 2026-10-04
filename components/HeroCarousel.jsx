@@ -55,14 +55,16 @@ export default function HeroCarousel() {
             <span className="w-6 h-6 rounded-full bg-stamp spin-slow" />
             {slide.eyebrow}
           </div>
-          <h1 className="font-display text-[38px] sm:text-[56px] lg:text-[72px] leading-[1.02]">
+          <h1 key={`t-${index}`} className="font-display text-[38px] sm:text-[56px] lg:text-[72px] leading-[1.02] animate-fade-up">
             {slide.title}
           </h1>
-          <p className="max-w-[46ch] text-[17px] text-ink/70">{slide.body}</p>
+          <p key={`b-${index}`} className="max-w-[46ch] text-[17px] text-ink/70 animate-fade-up" style={{ animationDelay: "60ms" }}>
+            {slide.body}
+          </p>
           <div className="flex items-center gap-4 mt-1">
             <Link
               href={slide.cta.href}
-              className="bg-ink text-canvas px-6 py-3.5 font-mono text-[13px] uppercase tracking-wider rounded-sm hover:bg-cobalt transition-colors"
+              className="bg-ink text-canvas px-6 py-3.5 font-mono text-[13px] uppercase tracking-wider rounded-sm hover:bg-cobalt transition-all shadow-[0_8px_20px_rgba(23,20,15,0.22)] hover:shadow-[0_10px_24px_rgba(44,70,224,0.35)] hover:-translate-y-0.5"
             >
               {slide.cta.label}
             </Link>
@@ -86,10 +88,28 @@ export default function HeroCarousel() {
         </div>
 
         <div
-          className="relative flex items-center justify-center min-h-[320px] transition-colors duration-700"
-          style={{ background: slide.bg }}
+          className="relative flex items-center justify-center min-h-[320px] overflow-hidden transition-colors duration-700"
+          style={{ background: `radial-gradient(120% 120% at 30% 20%, ${slide.bg}, ${slide.bg} 55%, rgba(0,0,0,0.18))` }}
         >
-          <Art hex={slide.artHex} className="w-[62%] max-w-[380px]" />
+          {/* halftone dot texture */}
+          <div
+            className="absolute inset-0 opacity-[0.12]"
+            style={{
+              backgroundImage: "radial-gradient(circle, rgba(240,238,230,.9) 1px, transparent 1px)",
+              backgroundSize: "16px 16px",
+            }}
+          />
+          {/* soft glow behind the art */}
+          <div
+            className="absolute w-[70%] aspect-square rounded-full blur-3xl opacity-20"
+            style={{ background: slide.artHex }}
+          />
+          <Art key={index} hex={slide.artHex} className="w-[58%] max-w-[360px] relative z-[1] drop-shadow-2xl animate-art-in" />
+
+          <div className="absolute bottom-6 right-6 bg-canvas/95 backdrop-blur px-4 py-2.5 rounded-sm rotate-2 shadow-xl font-mono text-[11px] z-[1]">
+            {slide.eyebrow.split(" — ")[0]}
+            <b className="block text-sm text-ink">৳850+</b>
+          </div>
         </div>
       </div>
     </section>

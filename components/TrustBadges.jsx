@@ -40,10 +40,11 @@ export default function TrustBadges() {
               i > 0 ? "md:border-l" : ""
             }`}
           >
-            <svg viewBox="0 0 24 24" className="w-7 h-7 text-cobalt flex-none" fill="none">
-              {b.icon}
-              {b.label === "7-Day Easy Returns" && <circle cx="12" cy="12" r="9.5" stroke="none" />}
-            </svg>
+            <span className="w-11 h-11 rounded-full bg-cobalt/10 flex items-center justify-center flex-none">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-cobalt" fill="none">
+                {b.icon}
+              </svg>
+            </span>
             <div>
               <p className="text-sm font-bold leading-tight">{b.label}</p>
               <p className="font-mono text-[11px] text-ink/50 mt-0.5">{b.sub}</p>

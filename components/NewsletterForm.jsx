@@ -32,7 +32,7 @@ export default function NewsletterForm() {
         placeholder="you@email.com"
         className="flex-1 bg-transparent border-[1.5px] border-canvas px-4 py-3.5 font-mono text-sm placeholder:text-canvas/50"
       />
-      <button className="bg-cobalt border-[1.5px] border-cobalt px-5 font-mono text-xs uppercase tracking-wider hover:bg-canvas hover:text-ink transition-colors">
+      <button className="bg-cobalt border-[1.5px] border-cobalt px-5 font-mono text-xs uppercase tracking-wider hover:bg-canvas hover:text-ink transition-all hover:-translate-y-0.5">
         Notify me
       </button>
     </form>

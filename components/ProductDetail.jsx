@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useToast } from "./Toast";
 import ProductArt from "./ProductArt";
 import QuickBuyModal from "./QuickBuyModal";
+import StickyBuyBar from "./StickyBuyBar";
 import { pushRecentlyViewed } from "@/lib/recentlyViewed";
 
 export default function ProductDetail({ product }) {
   const { addItem, wishlist, toggleWishlist } = useCart();
+  const { showToast } = useToast();
   const router = useRouter();
   const inStockVariants = product.variants.filter((v) => v.stock > 0);
   const [size, setSize] = useState(inStockVariants[0]?.size || product.variants[0].size);
@@ -35,6 +38,7 @@ export default function ProductDetail({ product }) {
       qty,
     });
     setAdded(true);
+    showToast(`Added ${product.name} (${size}) to cart`, { actionLabel: "View cart", actionHref: "/cart" });
     setTimeout(() => setAdded(false), 1600);
   }
 
@@ -148,6 +152,13 @@ export default function ProductDetail({ product }) {
           <p>Free delivery over ৳2,000</p>
         </div>
       </div>
+
+      <StickyBuyBar
+        product={product}
+        soldOut={soldOut}
+        onAdd={handleAdd}
+        onBuyNow={() => setBuyNowOpen(true)}
+      />
     </div>
   );
 }

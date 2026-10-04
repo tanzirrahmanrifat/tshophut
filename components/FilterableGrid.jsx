@@ -58,7 +58,7 @@ export default function FilterableGrid({ products, initialSort = "featured" }) {
 
 function Select({ label, value, onChange, options, display }) {
   return (
-    <label className="flex items-center gap-2 border border-line rounded-sm px-3 py-2 bg-paper">
+    <label className="flex items-center gap-2 border border-line rounded-sm px-3 py-2 bg-paper transition-colors hover:border-cobalt/50 focus-within:border-cobalt">
       <span className="text-ink/45">{label}</span>
       <select
         value={value}

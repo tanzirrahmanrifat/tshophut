@@ -2,8 +2,12 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="pt-16 border-t border-line mt-20">
-      <div className="max-w-[1220px] mx-auto px-5 sm:px-7">
+    <footer className="relative pt-16 border-t border-line mt-20 overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-[0.035] pointer-events-none"
+        style={{ backgroundImage: "radial-gradient(circle, #17140F 1px, transparent 1px)", backgroundSize: "18px 18px" }}
+      />
+      <div className="relative max-w-[1220px] mx-auto px-5 sm:px-7">
         <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 pb-12">
           <div>
             <Link href="/" className="flex items-center gap-2.5 font-display text-xl mb-3.5">
