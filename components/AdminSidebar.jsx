@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/admin/products", label: "Products", icon: "M20 7 12 3 4 7v10l8 4 8-4V7ZM4 7l8 4m0 0 8-4m-8 4v10" },
   { href: "/admin/orders", label: "Orders", icon: "M6 2h12l1 5H5l1-5Zm-1 5h14v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7Zm4 4v3m6-3v3" },
   { href: "/admin/discounts", label: "Discounts", icon: "M20 12 12 20l-8-8V5a1 1 0 0 1 1-1h7l8 8ZM7 7h.01" },
+  { href: "/admin/restock-alerts", label: "Restock alerts", icon: "M12 3v6l4 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" },
   { href: "/admin/settings", label: "Settings", icon: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8-3a8 8 0 0 0-.15-1.5l2-1.5-2-3.5-2.3.9a8 8 0 0 0-2.6-1.5L14.5 2h-5l-.45 2.9a8 8 0 0 0-2.6 1.5l-2.3-.9-2 3.5 2 1.5A8 8 0 0 0 4 12c0 .5.05 1 .15 1.5l-2 1.5 2 3.5 2.3-.9a8 8 0 0 0 2.6 1.5L9.5 22h5l.45-2.9a8 8 0 0 0 2.6-1.5l2.3.9 2-3.5-2-1.5c.1-.5.15-1 .15-1.5Z" },
 ];
 

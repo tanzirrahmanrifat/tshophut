@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "./Toast";
-import ProductArt from "./ProductArt";
 import QuickBuyModal from "./QuickBuyModal";
 import StickyBuyBar from "./StickyBuyBar";
+import ProductGallery from "./ProductGallery";
+import SizeGuideModal from "./SizeGuideModal";
+import SocialProofBadge from "./SocialProofBadge";
+import NotifyStockForm from "./NotifyStockForm";
 import { pushRecentlyViewed } from "@/lib/recentlyViewed";
 
 export default function ProductDetail({ product }) {
@@ -26,6 +29,8 @@ export default function ProductDetail({ product }) {
 
   const selectedVariant = product.variants.find((v) => v.size === size);
   const soldOut = !selectedVariant || selectedVariant.stock === 0;
+  const totalStock = product.variants.reduce((s, v) => s + v.stock, 0);
+  const allSoldOut = totalStock === 0;
 
   function handleAdd() {
     if (soldOut) return;
@@ -44,18 +49,12 @@ export default function ProductDetail({ product }) {
 
   return (
     <div className="grid md:grid-cols-2 gap-12">
-      <div className="bg-canvas-dim border border-line aspect-square flex items-center justify-center overflow-hidden">
-        {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-        ) : (
-          <ProductArt category={product.category} hex={product.hex} className="w-1/2" />
-        )}
-      </div>
+      <ProductGallery product={product} />
 
       <div>
         <span className="eyebrow">{product.fit}</span>
         <h1 className="font-display text-3xl sm:text-4xl mt-1 mb-3">{product.name}</h1>
-        <div className="flex items-center gap-3 mb-5">
+        <div className="flex items-center gap-3 mb-4">
           <span className="font-mono text-lg">
             {product.compareAtPrice && (
               <s className="text-ink/40 mr-2 text-sm">৳{product.compareAtPrice}</s>
@@ -65,28 +64,48 @@ export default function ProductDetail({ product }) {
           <span className="eyebrow">★ {product.rating} ({product.reviewCount} reviews)</span>
         </div>
 
+        <div className="mb-5">
+          <SocialProofBadge handle={product.handle} />
+        </div>
+
         <p className="text-ink/70 max-w-[52ch] mb-7">{product.description}</p>
 
-        <div className="mb-6">
-          <span className="eyebrow block mb-2">Size</span>
-          <div className="flex flex-wrap gap-2">
-            {product.variants.map((v) => (
-              <button
-                key={v.size}
-                disabled={v.stock === 0}
-                onClick={() => setSize(v.size)}
-                className={`px-4 py-2 border rounded-sm font-mono text-xs uppercase tracking-wider
-                ${size === v.size ? "bg-ink text-canvas border-ink" : "border-line"}
-                ${v.stock === 0 ? "opacity-30 line-through cursor-not-allowed" : "hover:border-cobalt"}`}
-              >
-                {v.size}
-              </button>
-            ))}
+        {product.category !== "custom" && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="eyebrow">Size</span>
+              <SizeGuideModal />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {product.variants.map((v) => (
+                <button
+                  key={v.size}
+                  disabled={v.stock === 0}
+                  onClick={() => setSize(v.size)}
+                  className={`px-4 py-2 border rounded-sm font-mono text-xs uppercase tracking-wider
+                  ${size === v.size ? "bg-ink text-canvas border-ink" : "border-line"}
+                  ${v.stock === 0 ? "opacity-30 line-through cursor-not-allowed" : "hover:border-cobalt"}`}
+                >
+                  {v.size}
+                </button>
+              ))}
+            </div>
+            {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 5 && (
+              <div className="mt-3">
+                <div className="flex justify-between font-mono text-xs text-stamp mb-1">
+                  <span>Only {selectedVariant.stock} left in {size}</span>
+                  <span>Almost gone</span>
+                </div>
+                <div className="h-1 bg-canvas-dim rounded-full overflow-hidden">
+                  <div className="h-full bg-stamp" style={{ width: `${Math.min(100, (selectedVariant.stock / 10) * 100)}%` }} />
+                </div>
+              </div>
+            )}
+            {soldOut && !allSoldOut && (
+              <NotifyStockForm handle={product.handle} productName={product.name} size={size} />
+            )}
           </div>
-          {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 5 && (
-            <p className="font-mono text-xs text-stamp mt-2">Only {selectedVariant.stock} left in this size</p>
-          )}
-        </div>
+        )}
 
         <div className="flex items-center gap-4 mb-7">
           <div className="flex items-center border border-ink rounded-sm">

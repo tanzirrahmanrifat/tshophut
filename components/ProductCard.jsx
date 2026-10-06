@@ -6,6 +6,7 @@ import ProductArt from "./ProductArt";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "./Toast";
 import QuickBuyModal from "./QuickBuyModal";
+import QuickViewModal from "./QuickViewModal";
 
 export default function ProductCard({ product }) {
   const { wishlist, toggleWishlist, addItem } = useCart();
@@ -14,8 +15,15 @@ export default function ProductCard({ product }) {
   const totalStock = product.variants.reduce((s, v) => s + v.stock, 0);
   const soldOut = totalStock === 0;
   const [buyNowOpen, setBuyNowOpen] = useState(false);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
   const firstInStock = product.variants.find((v) => v.stock > 0);
   const isCustom = product.category === "custom";
+
+  function handleQuickView(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setQuickViewOpen(true);
+  }
 
   function handleBuyNow(e) {
     e.preventDefault();
@@ -74,6 +82,13 @@ export default function ProductCard({ product }) {
         ) : (
           <ProductArt category={product.category} hex={product.hex} className="w-3/5 relative z-[1] transition-transform group-hover:scale-105 group-hover:-rotate-1" />
         )}
+
+        <button
+          onClick={handleQuickView}
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[2] px-4 py-2 bg-ink/90 text-canvas font-mono text-[10px] uppercase tracking-wider rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all backdrop-blur-sm hidden sm:block"
+        >
+          Quick view
+        </button>
       </Link>
 
       <button
@@ -157,6 +172,8 @@ export default function ProductCard({ product }) {
           }}
         />
       )}
+
+      <QuickViewModal product={product} open={quickViewOpen} onClose={() => setQuickViewOpen(false)} />
     </article>
   );
 }

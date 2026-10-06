@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { cacheOrder } from "@/lib/orderCache";
 
 export default function QuickBuyModal({ open, onClose, item }) {
   const { settings } = useCart();
@@ -10,6 +11,22 @@ export default function QuickBuyModal({ open, onClose, item }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [order, setOrder] = useState(null);
+
+  // Lock background scroll while the modal is open, and let Escape close it.
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKey(e) {
+      if (e.key === "Escape") handleClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   if (!open) return null;
 
@@ -33,6 +50,7 @@ export default function QuickBuyModal({ open, onClose, item }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
+      cacheOrder(data.order);
       setOrder(data.order);
     } catch (err) {
       setError(err.message);
@@ -51,8 +69,8 @@ export default function QuickBuyModal({ open, onClose, item }) {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div onClick={handleClose} className="absolute inset-0 bg-ink/50 backdrop-blur-[1px]" />
-      <div className="relative bg-paper w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-sm shadow-2xl">
-        <div className="flex items-center justify-between px-6 sm:px-7 py-5 border-b border-line sticky top-0 bg-paper z-10">
+      <div className="relative bg-paper w-full max-w-lg max-h-[85vh] rounded-sm shadow-2xl flex flex-col">
+        <div className="flex items-center justify-between px-6 sm:px-7 py-5 border-b border-line flex-none">
           <div>
             <span className="eyebrow">{order ? "Order confirmed" : "Express checkout"}</span>
             <h3 className="font-display text-xl mt-0.5">{order ? "You're all set" : "Buy now"}</h3>
@@ -63,7 +81,7 @@ export default function QuickBuyModal({ open, onClose, item }) {
         </div>
 
         {order ? (
-          <div className="text-center px-6 sm:px-7 py-10">
+          <div className="text-center px-6 sm:px-7 py-10 overflow-y-auto">
             <div className="w-12 h-12 rounded-full bg-cobalt text-white flex items-center justify-center mx-auto mb-4">
               <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
                 <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -76,6 +94,7 @@ export default function QuickBuyModal({ open, onClose, item }) {
             <div className="flex gap-3 justify-center">
               <Link
                 href={`/order-confirmation/${order.id}`}
+                onClick={handleClose}
                 className="bg-ink text-canvas px-5 py-2.5 font-mono text-xs uppercase tracking-wider rounded-sm hover:bg-cobalt transition-colors"
               >
                 View order
@@ -86,50 +105,53 @@ export default function QuickBuyModal({ open, onClose, item }) {
             </div>
           </div>
         ) : (
-          <div className="px-6 sm:px-7 py-6">
-            <div className="flex items-center gap-3.5 mb-6 pb-5 border-b border-dashed border-line">
-              <div className="w-14 h-14 rounded-sm flex-none" style={{ background: (item?.hex || "#17140F") + "22" }}>
-                <div className="w-full h-full rounded-sm" style={{ background: item?.hex, opacity: 0.85 }} />
+          <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
+            <div className="px-6 sm:px-7 py-6 overflow-y-auto min-h-0">
+              <div className="flex items-center gap-3.5 mb-6 pb-5 border-b border-dashed border-line">
+                <div className="w-14 h-14 rounded-sm flex-none" style={{ background: (item?.hex || "#17140F") + "22" }}>
+                  <div className="w-full h-full rounded-sm" style={{ background: item?.hex, opacity: 0.85 }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold truncate">{item?.name}</p>
+                  <p className="font-mono text-xs text-ink/50">
+                    {item?.size} · qty {item?.qty}
+                  </p>
+                </div>
+                <span className="font-mono text-sm font-bold flex-none">৳{lineTotal.toLocaleString()}</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold truncate">{item?.name}</p>
-                <p className="font-mono text-xs text-ink/50">
-                  {item?.size} · qty {item?.qty}
-                </p>
+
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <QField label="Full name" value={form.name} onChange={(v) => update("name", v)} required />
+                  <QField label="Phone number" value={form.phone} onChange={(v) => update("phone", v)} required />
+                </div>
+                <QField label="City" value={form.city} onChange={(v) => update("city", v)} required />
+                <QField label="Full address" value={form.address} onChange={(v) => update("address", v)} required textarea />
+
+                <div className="flex items-center justify-between px-3.5 py-3 border border-cobalt/30 bg-cobalt/5 rounded-sm">
+                  <span className="text-sm font-semibold">Cash on Delivery</span>
+                  <span className="w-4 h-4 rounded-full border-2 border-cobalt bg-cobalt flex-none" />
+                </div>
+
+                <div className="pt-2 space-y-1.5 font-mono text-sm">
+                  <div className="flex justify-between text-ink/60">
+                    <span>Subtotal</span>
+                    <span>৳{lineTotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-ink/60">
+                    <span>Shipping</span>
+                    <span>{shippingFee === 0 ? "Free" : `৳${shippingFee}`}</span>
+                  </div>
+                </div>
               </div>
-              <span className="font-mono text-sm font-bold flex-none">৳{lineTotal.toLocaleString()}</span>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <QField label="Full name" value={form.name} onChange={(v) => update("name", v)} required />
-                <QField label="Phone number" value={form.phone} onChange={(v) => update("phone", v)} required />
+            <div className="px-6 sm:px-7 py-5 border-t border-line flex-none">
+              <div className="flex justify-between text-base font-bold mb-3">
+                <span>Total</span>
+                <span>৳{total.toLocaleString()}</span>
               </div>
-              <QField label="City" value={form.city} onChange={(v) => update("city", v)} required />
-              <QField label="Full address" value={form.address} onChange={(v) => update("address", v)} required textarea />
-
-              <div className="flex items-center justify-between px-3.5 py-3 border border-cobalt/30 bg-cobalt/5 rounded-sm">
-                <span className="text-sm font-semibold">Cash on Delivery</span>
-                <span className="w-4 h-4 rounded-full border-2 border-cobalt bg-cobalt flex-none" />
-              </div>
-
-              <div className="pt-2 space-y-1.5 font-mono text-sm">
-                <div className="flex justify-between text-ink/60">
-                  <span>Subtotal</span>
-                  <span>৳{lineTotal.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-ink/60">
-                  <span>Shipping</span>
-                  <span>{shippingFee === 0 ? "Free" : `৳${shippingFee}`}</span>
-                </div>
-                <div className="flex justify-between text-base font-bold pt-1.5 border-t border-line">
-                  <span>Total</span>
-                  <span>৳{total.toLocaleString()}</span>
-                </div>
-              </div>
-
-              {error && <p className="text-stamp font-mono text-xs">{error}</p>}
-
+              {error && <p className="text-stamp font-mono text-xs mb-3">{error}</p>}
               <button
                 type="submit"
                 disabled={submitting}
@@ -137,8 +159,8 @@ export default function QuickBuyModal({ open, onClose, item }) {
               >
                 {submitting ? "Placing order…" : `Place order · ৳${total.toLocaleString()}`}
               </button>
-            </form>
-          </div>
+            </div>
+          </form>
         )}
       </div>
     </div>

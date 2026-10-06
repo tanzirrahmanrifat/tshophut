@@ -38,11 +38,17 @@ const SLIDES = [
 
 export default function HeroCarousel() {
   const [index, setIndex] = useState(0);
+  const [progressKey, setProgressKey] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), 6000);
     return () => clearInterval(id);
   }, []);
+
+  function goTo(i) {
+    setIndex(i);
+    setProgressKey((k) => k + 1);
+  }
 
   const slide = SLIDES[index];
   const Art = slide.art === "cap" ? CapArt : TeeArt;
@@ -79,10 +85,18 @@ export default function HeroCarousel() {
             {SLIDES.map((s, i) => (
               <button
                 key={i}
-                onClick={() => setIndex(i)}
+                onClick={() => goTo(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all ${i === index ? "w-8 bg-ink" : "w-3 bg-ink/20"}`}
-              />
+                className={`relative h-1.5 rounded-full overflow-hidden transition-all ${i === index ? "w-10 bg-ink/15" : "w-3 bg-ink/15"}`}
+              >
+                {i === index && (
+                  <span
+                    key={progressKey}
+                    className="absolute inset-y-0 left-0 bg-ink animate-progress"
+                    style={{ animationDuration: "6s" }}
+                  />
+                )}
+              </button>
             ))}
           </div>
         </div>

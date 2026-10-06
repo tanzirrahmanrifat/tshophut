@@ -61,6 +61,49 @@ export function TeeArt({ hex = "#17140F", className = "" }) {
   );
 }
 
+export function TeeArtBack({ hex = "#17140F", className = "" }) {
+  const uid = hex.replace("#", "") + "-back";
+  const dark = shadeOf(hex);
+  return (
+    <svg viewBox="0 0 160 180" fill="none" className={className}>
+      <defs>
+        <linearGradient id={`tee-${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={hex} />
+          <stop offset="100%" stopColor={dark} />
+        </linearGradient>
+        <filter id={`shadow-${uid}`} x="-20%" y="-10%" width="140%" height="130%">
+          <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#000" floodOpacity="0.16" />
+        </filter>
+      </defs>
+
+      <g filter={`url(#shadow-${uid})`}>
+        {/* body + sleeves (back view: higher, straighter neckline) */}
+        <path
+          d="M42 16 L16 32 L26 56 L40 48 L40 162 L120 162 L120 48 L134 56 L144 32 L118 16 L102 22
+             Q80 30 58 22 Z"
+          fill={`url(#tee-${uid})`}
+          stroke={dark}
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        {/* back neck rib — flatter than the front collar */}
+        <path d="M58 22 Q80 30 102 22" fill="none" stroke={dark} strokeWidth="1.5" opacity="0.8" />
+        {/* neck label */}
+        <rect x="72" y="22" width="16" height="7" rx="1.5" fill="none" stroke={dark} strokeWidth="1" opacity="0.5" />
+        {/* yoke seam */}
+        <path d="M40 48 Q80 58 120 48" stroke={dark} strokeWidth="1" opacity="0.3" fill="none" />
+        {/* center fold crease */}
+        <path d="M80 58 L80 160" stroke={dark} strokeWidth="1" opacity="0.25" strokeDasharray="1 5" />
+        {/* side seams */}
+        <path d="M40 60 L40 160" stroke={dark} strokeWidth="1" opacity="0.3" />
+        <path d="M120 60 L120 160" stroke={dark} strokeWidth="1" opacity="0.3" />
+        {/* hem */}
+        <path d="M44 158 L116 158" stroke={dark} strokeWidth="1" opacity="0.3" />
+      </g>
+    </svg>
+  );
+}
+
 export function CapArt({ hex = "#17140F", className = "" }) {
   const uid = hex.replace("#", "") + "-cap";
   const dark = shadeOf(hex);
@@ -94,6 +137,32 @@ export function CapArt({ hex = "#17140F", className = "" }) {
           strokeLinejoin="round"
         />
         <path d="M30 112 L130 112" stroke={dark} strokeWidth="1" opacity="0.25" />
+      </g>
+    </svg>
+  );
+}
+
+export function CapArtBack({ hex = "#17140F", className = "" }) {
+  const uid = hex.replace("#", "") + "-cap-back";
+  const dark = shadeOf(hex);
+  return (
+    <svg viewBox="0 0 160 180" fill="none" className={className}>
+      <defs>
+        <linearGradient id={`cap-${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={hex} />
+          <stop offset="100%" stopColor={dark} />
+        </linearGradient>
+        <filter id={`shadow-${uid}`} x="-20%" y="-10%" width="140%" height="130%">
+          <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#000" floodOpacity="0.16" />
+        </filter>
+      </defs>
+      <g filter={`url(#shadow-${uid})`}>
+        <path d="M30 108 Q30 40 80 36 Q130 40 130 108 Z" fill={`url(#cap-${uid})`} stroke={dark} strokeWidth="1.5" />
+        {/* adjustable strap + clasp, the back-of-cap tell */}
+        <path d="M46 70 Q80 86 114 70" stroke={dark} strokeWidth="1.5" fill="none" opacity="0.6" />
+        <rect x="68" y="76" width="24" height="10" rx="2" fill="none" stroke={dark} strokeWidth="1.3" opacity="0.7" />
+        <path d="M55 42 Q50 72 54 108" stroke={dark} strokeWidth="1" opacity="0.25" fill="none" />
+        <path d="M105 42 Q110 72 106 108" stroke={dark} strokeWidth="1" opacity="0.25" fill="none" />
       </g>
     </svg>
   );

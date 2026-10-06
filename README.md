@@ -80,6 +80,77 @@ directly to reflect your real numbers before launch.
   product), and an orders view with status updates (Processing → Confirmed
   → Shipped → Delivered).
 
+## Eye-catching / premium pass (v8)
+
+- **Scroll reveals**: homepage sections (trust badges, product rails, the
+  category grid, story collage, stats, newsletter) now fade/slide in as you
+  scroll to them instead of just appearing — makes the page feel alive
+  rather than static. New reusable `components/Reveal.jsx`.
+- **Bento-style category grid**: "Shop the range" went from four equal
+  squares to an asymmetric editorial layout — one large featured tile, two
+  small ones, one wide one — each with a hover-scaling icon and a "Shop
+  now" micro-link.
+- **Hero carousel polish**: the slide dots are now a real auto-advance
+  progress bar (fills over the 6s interval), not just static dots.
+- **Quick View**: hovering a product card now reveals a "Quick view" button
+  that opens the product in a modal (image, price, size picker, add to
+  cart) without leaving the page you're on.
+- **Richer link previews**: Open Graph / Twitter card metadata added, so
+  sharing the site link shows a proper title/description instead of
+  whatever a browser guesses.
+
+## More premium features + visual polish (v7)
+
+- **Product gallery**: product pages now have a front/back view toggle with
+  thumbnails (reusing the same illustrated-art system, with matching back
+  views added — neck label, yoke seam, back strap on caps). Products with
+  a real `imageUrl` set still just show that photo, unchanged.
+- **Stock urgency bar**: when a size has 5 or fewer left, there's now a
+  small progress bar under the size selector, not just text.
+- **Size guide modal**: a "Size guide" link next to the size selector opens
+  a real measurement chart (chest/length/shoulder per size).
+- **Back-in-stock notifications**: sold-out sizes show a "Notify me" field
+  instead of just being disabled. Requests are saved and visible in a new
+  **Restock alerts** admin page — there's no automatic SMS/email sender
+  wired up, so you'd reach out manually once restocked.
+- **Honest social proof**: product pages can show "N ordered in the last 7
+  days" — but only when it's true. It's computed from real rows in
+  `data/orders.json` via `/api/social-proof`; if nothing's actually sold
+  recently, nothing is shown. No fabricated names or fake activity.
+- **WhatsApp quick-contact button**: a floating button (bottom-right) that
+  opens a WhatsApp chat pre-filled with a greeting — only appears once you
+  set a support phone number in `/admin/settings`.
+- **FAQ page** (`/faq`, linked from the footer) covering drops, payment,
+  delivery, returns, and the Print on Demand designer.
+
+## Bug fixes (v6)
+
+- **Buy Now modal cut off / submit button unreachable**: the modal now has
+  a fixed header and a fixed footer (with the Place Order button and
+  total), and only the middle section scrolls — so the button is always
+  visible no matter how tall the content gets or how short the screen is.
+  Background scroll is also locked while it's open, and Escape closes it.
+- **"View order" 404ing right after checkout**: this was an infrastructure
+  issue, not a UI bug. Vercel's serverless functions don't reliably share
+  `/tmp` between invocations, so the order your checkout just wrote could
+  be invisible to the very next request that loads the confirmation page.
+  Every successful checkout (both the full checkout page and the Buy Now
+  popup) now also caches the order in the browser's `localStorage`
+  (`lib/orderCache.js`), and the confirmation page tries the server first,
+  then falls back to that cache. This fixes the common case reliably; it's
+  still a stopgap — see "What's intentionally stubbed" below for the real
+  fix (a proper database).
+- **Account icon felt broken**: there was never a login system (documented
+  from the start), so clicking it landed on a page that looked like it was
+  missing something. `/account` now says plainly that no sign-in is needed,
+  and leads with **"Recent orders placed from this device"** — pulled from
+  the same local order cache above — before wishlist and the manual
+  order-ID lookup.
+- **No mobile navigation**: the header's nav links were `hidden` below the
+  `md` breakpoint with no alternative, so phones had no way to reach
+  Tees/Caps/Custom from the header. Added a slide-in mobile menu (hamburger
+  icon) with nav links, search, account, and wishlist.
+
 ## Visual design pass (v5)
 
 - **Richer product illustrations**: the tee/cap line art now has shading

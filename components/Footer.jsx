@@ -38,8 +38,8 @@ export default function Footer() {
             <h4 className="eyebrow mb-4">Help</h4>
             <FooterLinks
               links={[
-                ["Size Guide", "/"],
-                ["Shipping", "/"],
+                ["FAQ", "/faq"],
+                ["Shipping & Returns", "/faq"],
                 ["Track Order", "/account"],
               ]}
             />

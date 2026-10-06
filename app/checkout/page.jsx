@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { cacheOrder } from "@/lib/orderCache";
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart, hydrated, settings } = useCart();
@@ -60,6 +61,7 @@ export default function CheckoutPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
+      cacheOrder(data.order);
       clearCart();
       router.push(`/order-confirmation/${data.order.id}`);
     } catch (err) {
