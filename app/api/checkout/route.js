@@ -10,7 +10,7 @@ function genOrderId() {
 
 export async function POST(request) {
   const body = await request.json();
-  const { items, shipping, paymentMethod, discountCode } = body;
+  const { items, shipping, paymentMethod, discountCode, customerId } = body;
 
   if (!items || items.length === 0) {
     return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
@@ -47,6 +47,7 @@ export async function POST(request) {
     createdAt: new Date().toISOString(),
     status: "Processing",
     paymentMethod,
+    customerId: customerId || null,
     items,
     shipping,
     subtotal,

@@ -80,6 +80,54 @@ directly to reflect your real numbers before launch.
   product), and an orders view with status updates (Processing → Confirmed
   → Shipped → Delivered).
 
+## Real customer accounts (v9)
+
+Customer login/registration is now a real (if intentionally minimal)
+system — not the device-local wishlist from before, which still exists
+alongside it for guest checkout:
+
+- **Register / log in / log out**: `/register` and `/login`, phone-or-email
+  + password. Passwords are salted and hashed with Node's built-in
+  `crypto.scrypt` (no external auth library needed); sessions are an
+  HMAC-signed cookie (`AUTH_SECRET` in `.env` — **set this to a real random
+  value before deploying**, the default is a placeholder).
+- **Header reflects login state**: the account icon becomes your initial in
+  a circle when logged in, and the mobile menu greets you by name.
+- **Checkout prefill**: name and phone auto-fill from your profile in both
+  the full checkout and the Buy Now popup, without overwriting anything
+  you've already typed.
+- **Orders tied to your account**: orders placed while logged in are
+  tagged with your customer ID and show up in "Your order history" on
+  `/account` from any device (via `/api/my-orders`) — not just the
+  per-device cache guests get.
+- **Still fully optional**: every page says plainly that guest checkout
+  works with no account, and registering is framed as "saves your
+  history," not a requirement.
+
+No email verification, password reset, or social login — those would need
+either an email-sending service or an OAuth provider, neither of which
+exists in this project yet. If you want password reset specifically, that
+just needs an email service (e.g. Resend) wired in.
+
+## Buy Now hardening
+
+Went through the whole flow again looking for real issues:
+
+- Phone fields now use `type="tel"` with the right mobile keyboard, in
+  both the Buy Now popup and the full checkout.
+- Buy Now from a product card now has its own quantity adjuster (it was
+  previously locked to 1).
+- Buy Now prefills name/phone from your account the same way checkout
+  does, if you're logged in.
+- Re-verified there's no Rules-of-Hooks violation or state leak between
+  opening Buy Now for different products back-to-back (each card owns its
+  own modal instance; state resets correctly on open).
+
+If something specific is still off, the most useful thing to send is the
+exact error text or a screenshot of what happens when you click Place
+Order — "not working perfectly" without more detail means I'm hardening
+against the most likely causes rather than the one you actually hit.
+
 ## Eye-catching / premium pass (v8)
 
 - **Scroll reveals**: homepage sections (trust badges, product rails, the

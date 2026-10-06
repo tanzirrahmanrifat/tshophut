@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { cacheOrder } from "@/lib/orderCache";
 
 export default function QuickBuyModal({ open, onClose, item }) {
   const { settings } = useCart();
+  const { customer } = useAuth();
   const [form, setForm] = useState({ name: "", phone: "", address: "", city: "" });
+  const [qty, setQty] = useState(item?.qty || 1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [order, setOrder] = useState(null);
@@ -28,9 +31,24 @@ export default function QuickBuyModal({ open, onClose, item }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  // Reset quantity to the item's default and prefill from the logged-in
+  // profile whenever a fresh item is opened.
+  useEffect(() => {
+    if (!open) return;
+    setQty(item?.qty || 1);
+    if (customer) {
+      setForm((f) => ({
+        ...f,
+        name: f.name || customer.name,
+        phone: f.phone || (customer.contact.includes("@") ? "" : customer.contact),
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, item?.handle]);
+
   if (!open) return null;
 
-  const lineTotal = (item?.price || 0) * (item?.qty || 1);
+  const lineTotal = (item?.price || 0) * qty;
   const shippingFee = lineTotal >= settings.freeShippingThreshold ? 0 : settings.standardShippingFee;
   const total = lineTotal + shippingFee;
 
@@ -46,7 +64,12 @@ export default function QuickBuyModal({ open, onClose, item }) {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: [item], shipping: form, paymentMethod: "cod" }),
+        body: JSON.stringify({
+          items: [{ ...item, qty }],
+          shipping: form,
+          paymentMethod: "cod",
+          customerId: customer?.id || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
@@ -113,17 +136,23 @@ export default function QuickBuyModal({ open, onClose, item }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold truncate">{item?.name}</p>
-                  <p className="font-mono text-xs text-ink/50">
-                    {item?.size} · qty {item?.qty}
-                  </p>
+                  <p className="font-mono text-xs text-ink/50">{item?.size}</p>
                 </div>
-                <span className="font-mono text-sm font-bold flex-none">৳{lineTotal.toLocaleString()}</span>
+                <div className="flex items-center border border-ink rounded-sm flex-none">
+                  <button type="button" className="w-7 h-7 font-mono text-sm" onClick={() => setQty((q) => Math.max(1, q - 1))}>
+                    −
+                  </button>
+                  <span className="w-7 text-center font-mono text-xs">{qty}</span>
+                  <button type="button" className="w-7 h-7 font-mono text-sm" onClick={() => setQty((q) => q + 1)}>
+                    +
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <QField label="Full name" value={form.name} onChange={(v) => update("name", v)} required />
-                  <QField label="Phone number" value={form.phone} onChange={(v) => update("phone", v)} required />
+                  <QField label="Phone number" value={form.phone} onChange={(v) => update("phone", v)} required type="tel" />
                 </div>
                 <QField label="City" value={form.city} onChange={(v) => update("city", v)} required />
                 <QField label="Full address" value={form.address} onChange={(v) => update("address", v)} required textarea />
@@ -167,12 +196,14 @@ export default function QuickBuyModal({ open, onClose, item }) {
   );
 }
 
-function QField({ label, value, onChange, required, textarea }) {
+function QField({ label, value, onChange, required, textarea, type = "text" }) {
   const Tag = textarea ? "textarea" : "input";
   return (
     <label className="block">
       <span className="font-mono text-[11px] uppercase tracking-wider text-ink/50 block mb-1">{label}</span>
       <Tag
+        type={textarea ? undefined : type}
+        inputMode={type === "tel" ? "tel" : undefined}
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}

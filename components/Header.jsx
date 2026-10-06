@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import CartDrawer from "./CartDrawer";
 
 const MEGA = {
@@ -32,6 +33,7 @@ const NAV = [
 
 export default function Header() {
   const { count, wishlist } = useCart();
+  const { customer } = useAuth();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -107,11 +109,22 @@ export default function Header() {
         </form>
 
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link href="/account" aria-label="Account" className="hidden md:flex w-8 h-8 items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
-              <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.8" />
-              <path d="M4.5 20c1.6-3.6 4.6-5.5 7.5-5.5s5.9 1.9 7.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+          <Link
+            href={customer ? "/account" : "/login"}
+            aria-label={customer ? "Account" : "Log in"}
+            className="hidden md:flex w-8 h-8 items-center justify-center relative"
+            title={customer ? `Signed in as ${customer.name}` : "Log in"}
+          >
+            {customer ? (
+              <span className="w-6 h-6 rounded-full bg-ink text-canvas flex items-center justify-center font-mono text-[10px] uppercase">
+                {customer.name.charAt(0)}
+              </span>
+            ) : (
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+                <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.8" />
+                <path d="M4.5 20c1.6-3.6 4.6-5.5 7.5-5.5s5.9 1.9 7.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            )}
           </Link>
           <Link href="/account?tab=wishlist" aria-label="Wishlist" className="hidden md:flex relative w-8 h-8 items-center justify-center">
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
@@ -179,8 +192,12 @@ export default function Header() {
               {n.label}
             </Link>
           ))}
-          <Link href="/account" onClick={() => setMobileOpen(false)} className="py-2.5 border-b border-dashed border-line">
-            Account
+          <Link
+            href={customer ? "/account" : "/login"}
+            onClick={() => setMobileOpen(false)}
+            className="py-2.5 border-b border-dashed border-line"
+          >
+            {customer ? `Hi, ${customer.name.split(" ")[0]}` : "Log in / Register"}
           </Link>
           <Link href="/account?tab=wishlist" onClick={() => setMobileOpen(false)} className="py-2.5 border-b border-dashed border-line">
             Wishlist {wishlist.length > 0 && `(${wishlist.length})`}

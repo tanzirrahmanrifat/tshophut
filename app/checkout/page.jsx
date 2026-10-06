@@ -1,14 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { cacheOrder } from "@/lib/orderCache";
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart, hydrated, settings } = useCart();
+  const { customer } = useAuth();
   const router = useRouter();
   const [form, setForm] = useState({ name: "", phone: "", address: "", city: "", note: "" });
+
+  // Prefill from the logged-in profile once it's available — never
+  // overwrites something the person already started typing.
+  useEffect(() => {
+    if (!customer) return;
+    setForm((f) => ({
+      ...f,
+      name: f.name || customer.name,
+      phone: f.phone || (customer.contact.includes("@") ? "" : customer.contact),
+    }));
+  }, [customer]);
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -57,7 +70,13 @@ export default function CheckoutPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, shipping: form, paymentMethod, discountCode: discount?.code || null }),
+        body: JSON.stringify({
+          items,
+          shipping: form,
+          paymentMethod,
+          discountCode: discount?.code || null,
+          customerId: customer?.id || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
@@ -98,7 +117,7 @@ export default function CheckoutPage() {
             <span className="eyebrow block mb-2">Shipping details</span>
             <div className="space-y-3">
               <Input label="Full name" value={form.name} onChange={(v) => update("name", v)} required />
-              <Input label="Phone number" value={form.phone} onChange={(v) => update("phone", v)} required />
+              <Input label="Phone number" value={form.phone} onChange={(v) => update("phone", v)} required type="tel" />
               <Input label="City" value={form.city} onChange={(v) => update("city", v)} required />
               <Input label="Full address" value={form.address} onChange={(v) => update("address", v)} required textarea />
               <Input label="Order note (optional)" value={form.note} onChange={(v) => update("note", v)} textarea />
@@ -199,12 +218,14 @@ export default function CheckoutPage() {
   );
 }
 
-function Input({ label, value, onChange, required, textarea }) {
+function Input({ label, value, onChange, required, textarea, type = "text" }) {
   const Tag = textarea ? "textarea" : "input";
   return (
     <label className="block">
       <span className="font-mono text-[11px] uppercase tracking-wider text-ink/50 block mb-1.5">{label}</span>
       <Tag
+        type={textarea ? undefined : type}
+        inputMode={type === "tel" ? "tel" : undefined}
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}

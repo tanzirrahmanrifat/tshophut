@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { getCachedOrders } from "@/lib/orderCache";
 
 export default function AccountPage() {
   const { wishlist, hydrated } = useCart();
+  const { customer, logout, loading } = useAuth();
+  const router = useRouter();
   const [wishProducts, setWishProducts] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
   const [orderId, setOrderId] = useState("");
@@ -14,8 +18,21 @@ export default function AccountPage() {
   const [lookupError, setLookupError] = useState("");
 
   useEffect(() => {
-    setRecentOrders(getCachedOrders());
-  }, []);
+    const local = getCachedOrders();
+    if (!customer) {
+      setRecentOrders(local);
+      return;
+    }
+    fetch("/api/my-orders")
+      .then((r) => r.json())
+      .then((data) => {
+        const serverOrders = data.orders || [];
+        const merged = [...serverOrders, ...local.filter((l) => !serverOrders.some((s) => s.id === l.id))];
+        merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setRecentOrders(merged);
+      })
+      .catch(() => setRecentOrders(local));
+  }, [customer]);
 
   useEffect(() => {
     if (!hydrated || wishlist.length === 0) {
@@ -40,24 +57,55 @@ export default function AccountPage() {
     setOrder(data.order);
   }
 
+  async function handleLogout() {
+    await logout();
+    router.refresh();
+  }
+
   return (
     <main className="max-w-[900px] mx-auto px-5 sm:px-7 py-14 space-y-16">
-      <div>
-        <span className="eyebrow">Account</span>
-        <h1 className="font-display text-3xl mt-1 mb-2">Your Tshophut</h1>
-        <p className="text-ink/60 text-sm max-w-[56ch]">
-          No sign-in needed — your wishlist and recent orders are saved on this device.
-          Switching browsers or clearing site data will reset them; use the order lookup
-          below with your order ID or phone number from any device.
-        </p>
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <span className="eyebrow">Account</span>
+          {!loading && customer ? (
+            <>
+              <h1 className="font-display text-3xl mt-1 mb-2">Hi, {customer.name.split(" ")[0]}.</h1>
+              <p className="text-ink/60 text-sm">{customer.contact}</p>
+            </>
+          ) : (
+            <>
+              <h1 className="font-display text-3xl mt-1 mb-2">Your Tshophut</h1>
+              <p className="text-ink/60 text-sm max-w-[56ch]">
+                Not logged in — your wishlist and recent orders are still saved on this device.{" "}
+                <Link href="/login" className="underline hover:text-cobalt">
+                  Log in
+                </Link>{" "}
+                or{" "}
+                <Link href="/register" className="underline hover:text-cobalt">
+                  create an account
+                </Link>{" "}
+                to save your order history for good and skip re-typing your address next time.
+              </p>
+            </>
+          )}
+        </div>
+        {!loading && customer && (
+          <button onClick={handleLogout} className="font-mono text-xs uppercase tracking-wider underline text-ink/60 hover:text-stamp">
+            Log out
+          </button>
+        )}
       </div>
 
       <section>
         <span className="eyebrow">Recent orders</span>
-        <h2 className="font-display text-2xl mt-1 mb-6">Placed from this device</h2>
+        <h2 className="font-display text-2xl mt-1 mb-6">
+          {customer ? "Your order history" : "Placed from this device"}
+        </h2>
         {recentOrders.length === 0 ? (
           <p className="font-mono text-sm text-ink/50">
-            No orders placed from this device yet — they&apos;ll show up here right after checkout.
+            {customer
+              ? "No orders on your account yet — they'll show up here right after checkout."
+              : "No orders placed from this device yet — they'll show up here right after checkout."}
           </p>
         ) : (
           <div className="space-y-3">

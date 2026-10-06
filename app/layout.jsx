@@ -1,5 +1,6 @@
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/components/Toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -33,13 +34,15 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="font-body">
         <ToastProvider>
-          <CartProvider>
-            <Announce />
-            <Header />
-            {children}
-            <Footer />
-            <WhatsAppButton />
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              <Announce />
+              <Header />
+              {children}
+              <Footer />
+              <WhatsAppButton />
+            </CartProvider>
+          </AuthProvider>
         </ToastProvider>
       </body>
     </html>
